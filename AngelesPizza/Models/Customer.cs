@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
-namespace AnglesPizza.Models
+namespace AngelesPizza.Models
 {
     public class Customer
     {
@@ -26,6 +27,8 @@ namespace AnglesPizza.Models
         [Display(Name = "Activo")]
         public bool IsActive { get; set; } = true;
 
+        //Navegacion
+        [ValidateNever]
         public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

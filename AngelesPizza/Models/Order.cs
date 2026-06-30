@@ -1,7 +1,8 @@
-﻿using AnglesPizza.Enums;
+﻿using AngelesPizza.Enums;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
-namespace AnglesPizza.Models
+namespace AngelesPizza.Models
 {
     public class Order
     {
@@ -37,10 +38,14 @@ namespace AnglesPizza.Models
         public string? Notes { get; set; }
 
         // Navegación
+        [ValidateNever]
         public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+
+        [ValidateNever]
 
         public ICollection<OrderStatusHistory> StatusHistory { get; set; } = new List<OrderStatusHistory>();
 
+        [ValidateNever] 
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

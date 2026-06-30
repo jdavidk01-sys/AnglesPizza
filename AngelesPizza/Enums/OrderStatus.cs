@@ -1,4 +1,4 @@
-﻿namespace AnglesPizza.Enums
+﻿namespace AngelesPizza.Enums
 {
     public enum OrderStatus
     {

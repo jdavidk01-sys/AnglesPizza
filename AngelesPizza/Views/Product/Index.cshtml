@@ -1,0 +1,209 @@
+﻿@model IEnumerable<AngelesPizza.Models.Product>?
+
+@{
+    ViewData["Title"] = "Productos";
+}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+        Productos
+    </h2>
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <strong>Búsqueda</strong>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Index" method="get">
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Nombre, descripción o categoría
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               name="search"
+                               value="@Context.Request.Query["search"]"
+                               placeholder="Ingrese un criterio de búsqueda..." />
+
+                    </div>
+
+                    <div class="col-md-6 text-md-end">
+
+                        <button type="submit"
+                                class="btn btn-primary">
+                            <i class="bi bi-search"></i>
+                            Buscar
+                        </button>
+
+                        <button type="submit"
+                                name="showAll"
+                                value="true"
+                                class="btn btn-secondary">
+                            <i class="bi bi-list"></i>
+                            Ver Todas
+                        </button>
+
+                        <a asp-action="Create"
+                           class="btn btn-success">
+                            <i class="bi bi-plus-circle"></i>
+                            Nuevo Producto
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    @if (Model == null)
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Realice una búsqueda o presione <strong>Ver Todas</strong> para consultar los productos.
+        </div>
+    }
+    else if (!Model.Any())
+    {
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-circle"></i>
+            No se encontraron productos con los criterios indicados.
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+
+            <div class="card-header">
+                <strong>Resultados</strong>
+            </div>
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table id="tblProducts"
+                           class="table table-striped table-hover table-bordered align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Categoría</th>
+                                <th>Producto</th>
+                                <th>Descripción</th>
+                                <th class="text-end">Precio</th>
+                                <th class="text-center">Disponible</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @item.Category.Name
+                                    </td>
+
+                                    <td>
+                                        @item.Name
+                                    </td>
+
+                                    <td>
+                                        @item.Description
+                                    </td>
+
+                                    <td class="text-end">
+                                        @item.Price.ToString("N0")
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        @if (item.IsAvailable)
+                                        {
+                                            <span class="badge bg-success">
+                                                Sí
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                No
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-warning btn-sm">
+
+                                            <i class="bi bi-pencil-square"></i>
+                                            Editar
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        $(function () {
+
+            if ($('#tblProducts').length) {
+
+                $('#tblProducts').DataTable({
+
+                    responsive: true,
+                    searching: false,
+                    ordering: true,
+                    pageLength: 10,
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/2.3.2/i18n/es-ES.json'
+                    }
+
+                });
+
+            }
+
+        });
+
+    </script>
+
+}

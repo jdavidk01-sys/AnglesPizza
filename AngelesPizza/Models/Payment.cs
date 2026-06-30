@@ -1,7 +1,7 @@
-﻿using AnglesPizza.Enums;
+﻿using AngelesPizza.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace AnglesPizza.Models
+namespace AngelesPizza.Models
 {
     public class Payment
     {

@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AnglesPizza.Models
+namespace AngelesPizza.Models
 {
     public class ProductModifier
     {
@@ -20,9 +21,11 @@ namespace AnglesPizza.Models
 
         public int ProductId { get; set; }
 
-        // Navegación
         public Product Product { get; set; } = null!;
 
+        // Navegación
+
+        [ValidateNever]
         public ICollection<OrderDetailModifier> OrderDetailModifiers { get; set; } = new List<OrderDetailModifier>();
 
     }

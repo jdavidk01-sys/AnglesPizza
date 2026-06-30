@@ -1,7 +1,7 @@
-﻿using AnglesPizza.Models;
+﻿using AngelesPizza.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace AnglesPizza.Data
+namespace AngelesPizza.Data
 {
     public class ApplicationDbContext : DbContext
     {

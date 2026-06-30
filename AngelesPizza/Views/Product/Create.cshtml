@@ -1,0 +1,47 @@
+﻿@model AngelesPizza.Models.Product
+
+@{
+    ViewData["Title"] = "Nuevo Producto";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Nuevo Producto</h2>
+
+        <a asp-action="Index"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left"></i>
+            Regresar
+
+        </a>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+            <strong>Información General</strong>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Create" method="post">
+
+                <partial name="_Form" model="Model" />
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

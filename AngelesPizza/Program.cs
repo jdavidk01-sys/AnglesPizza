@@ -1,4 +1,4 @@
-using AnglesPizza.Data;
+using AngelesPizza.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
