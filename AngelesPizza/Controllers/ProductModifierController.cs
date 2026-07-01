@@ -24,21 +24,10 @@ namespace AngelesPizza.Controllers
                 return View(null);
 
             var query = _context.ProductModifiers
-                .Include(x => x.Product)
                 .AsQueryable();
 
-            if (!showAll)
-            {
-                search = search!.Trim();
-
-                query = query.Where(x =>
-                    x.Name.Contains(search) ||
-                    x.Product.Name.Contains(search));
-            }
 
             var modifiers = await query
-                .OrderBy(x => x.Product.Name)
-                .ThenBy(x => x.Name)
                 .ToListAsync();
 
             return View(modifiers);
@@ -117,7 +106,6 @@ namespace AngelesPizza.Controllers
             modifier.Name = model.Name;
             modifier.ExtraCost = model.ExtraCost;
             modifier.IsActive = model.IsActive;
-            modifier.ProductId = model.ProductId;
 
             await _context.SaveChangesAsync();
 

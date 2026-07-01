@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AngelesPizza.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace AngelesPizza.Models
 {
@@ -15,5 +16,8 @@ namespace AngelesPizza.Models
         public int ProductModifierId { get; set; }
 
         public ProductModifier ProductModifier { get; set; } = null!;
+
+        [Display(Name = "Costo Adicional")]
+        public int ExtraCost { get; set; }
     }
 }

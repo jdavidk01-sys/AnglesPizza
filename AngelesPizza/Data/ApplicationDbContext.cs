@@ -45,13 +45,6 @@ namespace AngelesPizza.Data
                 .HasForeignKey(p => p.CategoryId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Product -> ProductModifiers
-            modelBuilder.Entity<ProductModifier>()
-                .HasOne(pm => pm.Product)
-                .WithMany(p => p.Modifiers)
-                .HasForeignKey(pm => pm.ProductId)
-                .OnDelete(DeleteBehavior.NoAction);
-
             // Customer -> Orders
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Customer)

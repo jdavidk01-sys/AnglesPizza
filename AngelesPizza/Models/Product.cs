@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using AngelesPizza.Models;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AngelesPizza.Models
 {
@@ -26,17 +25,12 @@ namespace AngelesPizza.Models
         [Display(Name = "Categoría")]
         public int CategoryId { get; set; }
 
+        public Category Category { get; set; } = null!;
+
         [Display(Name = "Imagen")]
         public byte[]? ImageData { get; set; }
 
         // Navegación
-        [ValidateNever]
-        public Category Category { get; set; } = null!;
-
-        [ValidateNever]
-        public ICollection<ProductModifier> Modifiers { get; set; } = new List<ProductModifier>();
-
-        [ValidateNever]
         public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
     }
 }
