@@ -26,6 +26,9 @@ namespace AngelesPizza.Models
         [Display(Name = "Categoría")]
         public int CategoryId { get; set; }
 
+        [Display(Name = "Imagen")]
+        public byte[]? ImageData { get; set; }
+
         // Navegación
         [ValidateNever]
         public Category Category { get; set; } = null!;

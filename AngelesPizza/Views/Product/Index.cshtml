@@ -191,11 +191,14 @@
                 $('#tblProducts').DataTable({
 
                     responsive: true,
-                    searching: false,
+                    paging: true,
                     ordering: true,
+                    searching: true,
+                    info: true,
+                    lengthChange: true,
                     pageLength: 10,
                     language: {
-                        url: 'https://cdn.datatables.net/plug-ins/2.3.2/i18n/es-ES.json'
+                        url: '//cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json'
                     }
 
                 });

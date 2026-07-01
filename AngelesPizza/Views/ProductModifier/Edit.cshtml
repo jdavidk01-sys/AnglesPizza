@@ -1,0 +1,48 @@
+﻿@model AngelesPizza.Models.ProductModifier
+
+@{
+    ViewData["Title"] = "Editar Modificador";
+}
+
+<div class="card shadow-sm">
+
+    <div class="card-header">
+        <h4 class="mb-0">
+            <i class="bi bi-pencil-square"></i>
+            Editar Modificador
+        </h4>
+    </div>
+
+    <div class="card-body">
+
+        <form asp-action="Edit" method="post">
+
+            <input asp-for="Id" type="hidden" />
+
+            <partial name="_Form" />
+
+            <div class="mt-4">
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-floppy"></i>
+                    Guardar Cambios
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Regresar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

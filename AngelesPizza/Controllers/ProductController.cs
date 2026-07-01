@@ -55,12 +55,21 @@ namespace AngelesPizza.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product model)
+        public async Task<IActionResult> Create(Product model, IFormFile? ImageFile)
         {
             if (!ModelState.IsValid)
             {
                 await LoadCategories();
                 return View(model);
+            }
+
+            if (ImageFile != null && ImageFile.Length > 0)
+            {
+                using var ms = new MemoryStream();
+
+                await ImageFile.CopyToAsync(ms);
+
+                model.ImageData = ms.ToArray();
             }
 
             _context.Products.Add(model);
@@ -88,7 +97,7 @@ namespace AngelesPizza.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Product model)
+        public async Task<IActionResult> Edit(Product model, IFormFile? ImageFile)
         {
             if (!ModelState.IsValid)
             {
@@ -96,12 +105,41 @@ namespace AngelesPizza.Controllers
                 return View(model);
             }
 
-            _context.Products.Update(model);
+            var product = await _context.Products.FindAsync(model.Id);
+
+            if (product == null)
+                return NotFound();
+
+            product.Name = model.Name;
+            product.Description = model.Description;
+            product.Price = model.Price;
+            product.CategoryId = model.CategoryId;
+            product.IsAvailable = model.IsAvailable;
+
+            if (ImageFile != null && ImageFile.Length > 0)
+            {
+                using var ms = new MemoryStream();
+
+                await ImageFile.CopyToAsync(ms);
+
+                product.ImageData = ms.ToArray();
+            }
+
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "El producto fue actualizado correctamente.";
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> GetImage(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+
+            if (product == null || product.ImageData == null)
+                return NotFound();
+
+            return File(product.ImageData, "image/jpeg");
         }
 
         // ===========================

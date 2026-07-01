@@ -28,11 +28,22 @@
 
         <div class="card-body">
 
-            <form asp-action="Edit" method="post">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
                 <input asp-for="Id" type="hidden" />
 
                 <partial name="_Form" model="Model" />
+
+                @if (Model.ImageData != null)
+                {
+                    <div class="mb-3">
+
+                        <img src="@Url.Action("GetImage", "Product", new { id = Model.Id })"
+                             class="img-thumbnail"
+                             style="max-height:200px;" />
+
+                    </div>
+                }
 
             </form>
 

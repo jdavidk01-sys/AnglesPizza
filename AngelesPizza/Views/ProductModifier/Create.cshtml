@@ -1,0 +1,46 @@
+﻿@model AngelesPizza.Models.ProductModifier
+
+@{
+    ViewData["Title"] = "Nuevo Modificador";
+}
+
+<div class="card shadow-sm">
+
+    <div class="card-header">
+        <h4 class="mb-0">
+            <i class="bi bi-plus-circle"></i>
+            Nuevo Modificador
+        </h4>
+    </div>
+
+    <div class="card-body">
+
+        <form asp-action="Create" method="post">
+
+            <partial name="_Form" />
+
+            <div class="mt-4">
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i>
+                    Guardar
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Regresar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
