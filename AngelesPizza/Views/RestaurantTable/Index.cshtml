@@ -1,13 +1,13 @@
-﻿@model IEnumerable<AngelesPizza.Models.ProductModifier>?
+﻿@model IEnumerable<AngelesPizza.Models.RestaurantTable>?
 
 @{
-    ViewData["Title"] = "Modificadores";
+    ViewData["Title"] = "Mesas";
 }
 
 <div class="container-fluid">
 
     <h2 class="mb-4">
-        Modificadores
+        Mesas
     </h2>
 
     <div class="card shadow-sm mb-4">
@@ -25,7 +25,7 @@
                     <div class="col-md-6">
 
                         <label class="form-label">
-                            Nombre o producto
+                            Nombre de la mesa
                         </label>
 
                         <input type="text"
@@ -60,7 +60,7 @@
                            class="btn btn-secondary">
 
                             <i class="bi bi-plus-circle"></i>
-                            Nuevo Modificador
+                            Nueva Mesa
 
                         </a>
 
@@ -80,7 +80,7 @@
 
             <i class="bi bi-info-circle"></i>
 
-            Realice una búsqueda o presione <strong>Ver Todas</strong> para consultar los modificadores.
+            Realice una búsqueda o presione <strong>Ver Todas</strong> para consultar las mesas.
 
         </div>
     }
@@ -90,7 +90,7 @@
 
             <i class="bi bi-exclamation-circle"></i>
 
-            No se encontraron modificadores con los criterios indicados.
+            No se encontraron mesas con los criterios indicados.
 
         </div>
     }
@@ -106,15 +106,15 @@
 
                 <div class="table-responsive">
 
-                    <table id="tblModifiers"
+                    <table id="tblTables"
                            class="table table-striped table-hover table-bordered align-middle">
 
                         <thead class="table-light">
 
                             <tr>
-                                <th>Modificador</th>
-                                <th class="text-end">Costo Adicional</th>
-                                <th class="text-center">Activo</th>
+                                <th>Mesa</th>
+                                <th class="text-end">Capacidad</th>
+                                <th class="text-center">Activa</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
 
@@ -129,7 +129,7 @@
                                     <td>@item.Name</td>
 
                                     <td class="text-end">
-                                        @item.ExtraCost.ToString("N0")
+                                        @item.Capacity
                                     </td>
 
                                     <td class="text-center">
@@ -149,7 +149,7 @@
 
                                         <a asp-action="Edit"
                                            asp-route-id="@item.Id"
-                                           class="btn btn-secondarybtn-sm">
+                                           class="btn btn-secondary btn-sm">
 
                                             <i class="bi bi-pencil-square"></i>
                                             Editar
@@ -182,14 +182,14 @@
 
         $(function () {
 
-            if ($('#tblModifiers').length) {
+            if ($('#tblTables').length) {
 
-                $('#tblModifiers').DataTable({
+                $('#tblTables').DataTable({
 
                     responsive: true,
                     paging: true,
                     ordering: true,
-                    searching: false,
+                    searching: true,
                     info: true,
                     lengthChange: true,
                     pageLength: 10,

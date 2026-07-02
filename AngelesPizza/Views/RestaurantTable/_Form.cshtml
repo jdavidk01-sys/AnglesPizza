@@ -1,4 +1,4 @@
-﻿@model AngelesPizza.Models.ProductModifier
+﻿@model AngelesPizza.Models.RestaurantTable
 
 <div asp-validation-summary="ModelOnly"
      class="text-danger mb-3">
@@ -22,16 +22,16 @@
 
 <div class="mb-3">
 
-    <label asp-for="ExtraCost"
+    <label asp-for="Capacity"
            class="form-label">
     </label>
 
-    <input asp-for="ExtraCost"
+    <input asp-for="Capacity"
            type="number"
-           min="0"
+           min="1"
            class="form-control" />
 
-    <span asp-validation-for="ExtraCost"
+    <span asp-validation-for="Capacity"
           class="text-danger">
     </span>
 

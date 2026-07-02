@@ -1,5 +1,6 @@
 ﻿using AngelesPizza.Enums;
 using AngelesPizza.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace AngelesPizza.Models
@@ -11,11 +12,13 @@ namespace AngelesPizza.Models
         [Display(Name = "Pedido")]
         public int OrderId { get; set; }
 
+        [ValidateNever] 
         public Order Order { get; set; } = null!;
 
         [Display(Name = "Producto")]
         public int ProductId { get; set; }
 
+        [ValidateNever] 
         public Product Product { get; set; } = null!;
 
         [Display(Name = "Precio")]
@@ -29,6 +32,8 @@ namespace AngelesPizza.Models
         public string? Notes { get; set; }
 
         // Navegación
+
+        [ValidateNever] 
         public ICollection<OrderDetailModifier> OrderDetailModifiers { get; set; } = new List<OrderDetailModifier>();
     }
 }

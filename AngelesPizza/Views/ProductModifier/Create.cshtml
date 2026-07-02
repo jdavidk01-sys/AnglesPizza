@@ -4,43 +4,44 @@
     ViewData["Title"] = "Nuevo Modificador";
 }
 
-<div class="card shadow-sm">
+<div class="container-fluid">
 
-    <div class="card-header">
-        <h4 class="mb-0">
-            <i class="bi bi-plus-circle"></i>
-            Nuevo Modificador
-        </h4>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Nuevo Modificador</h2>
+
+        <a asp-action="Index"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left"></i>
+            Regresar
+
+        </a>
+
     </div>
 
-    <div class="card-body">
+    <div class="card shadow-sm">
 
-        <form asp-action="Create" method="post">
+        <div class="card-header">
+            <strong>Información General</strong>
+        </div>
 
-            <partial name="_Form" />
+        <div class="card-body">
 
-            <div class="mt-4">
+            <form asp-action="Create" method="post">
 
-                <button type="submit" class="btn btn-success">
-                    <i class="bi bi-check-circle"></i>
-                    Guardar
-                </button>
+                <partial name="_Form" model="Model" />
 
-                <a asp-action="Index" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left"></i>
-                    Regresar
-                </a>
+            </form>
 
-            </div>
-
-        </form>
+        </div>
 
     </div>
 
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+
+    <partial name="_ValidationScriptsPartial" />
+
 }

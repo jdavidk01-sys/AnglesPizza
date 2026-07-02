@@ -1,4 +1,6 @@
 ﻿using AngelesPizza.Enums;
+using AngelesPizza.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace AngelesPizza.Models
@@ -9,7 +11,7 @@ namespace AngelesPizza.Models
 
         public int OrderId { get; set; }
 
-        public Order Order { get; set; } = null!;
+        [ValidateNever] public Order Order { get; set; } = null!;
 
         [Display(Name = "Estado")]
         public OrderStatus Status { get; set; }

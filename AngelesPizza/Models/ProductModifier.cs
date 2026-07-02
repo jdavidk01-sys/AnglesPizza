@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AngelesPizza.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace AngelesPizza.Models
 {
@@ -18,6 +20,7 @@ namespace AngelesPizza.Models
         public bool IsActive { get; set; } = true;
 
         // Navegación
+        [ValidateNever] 
         public ICollection<OrderDetailModifier> OrderDetailModifiers { get; set; } = new List<OrderDetailModifier>();
     }
 }
