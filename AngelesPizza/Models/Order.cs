@@ -19,7 +19,7 @@ namespace AngelesPizza.Models
         public OrderType OrderType { get; set; }
 
         [Display(Name = "Estado")]
-        public OrderStatus Status { get; set; } = OrderStatus.PendingPayment;
+        public OrderStatus Status { get; set; } = OrderStatus.Created;
 
         [Display(Name = "Cliente")]
         public int? CustomerId { get; set; }
@@ -32,6 +32,12 @@ namespace AngelesPizza.Models
 
         [ValidateNever]
         public RestaurantTable? RestaurantTable { get; set; }
+
+        [Display(Name ="Sub Total")]
+        public int SubTotal { get; set; }
+
+        [Display(Name ="Iva")]
+        public int Tax { get; set; }
 
         [Display(Name = "Total")]
         public int Total { get; set; }

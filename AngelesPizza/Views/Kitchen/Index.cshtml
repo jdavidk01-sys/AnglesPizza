@@ -1,0 +1,150 @@
+﻿@model IEnumerable<AngelesPizza.Models.Order>
+
+@{
+    ViewData["Title"] = "Cocina";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            Cocina
+        </h2>
+
+        <span class="badge bg-danger fs-6">
+            @Model.Count() Pedido(s)
+        </span>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-success">
+
+            <i class="bi bi-check-circle"></i>
+
+            No hay pedidos pendientes.
+
+        </div>
+    }
+    else
+    {
+        <div class="row">
+
+            @foreach (var order in Model)
+            {
+                <div class="col-lg-4 mb-4">
+
+                    <div class="card shadow-sm h-100">
+
+                        <div class="card-header">
+
+                            <div class="d-flex justify-content-between">
+
+                                <strong>
+                                    Pedido #@order.OrderNumber
+                                </strong>
+
+                                <span class="badge @(order.Status == AngelesPizza.Enums.OrderStatus.Queued ? "bg-warning text-dark" : "bg-primary")">
+
+                                    @order.Status
+
+                                </span>
+
+                            </div>
+
+                            <small>
+
+                                @order.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+
+                            </small>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            @if (order.Customer != null)
+                            {
+                                <div class="mb-2">
+
+                                    <strong>Cliente:</strong>
+
+                                    @order.Customer.Name
+
+                                </div>
+                            }
+
+                            <hr />
+
+                            @foreach (var item in order.OrderDetails)
+                            {
+                                <div class="mb-3">
+
+                                    <strong>
+
+                                        @item.Product.Name
+
+                                    </strong>
+
+                                    @foreach (var modifier in item.OrderDetailModifiers)
+                                    {
+                                        <div class="ms-3">
+
+                                            + @modifier.ProductModifier.Name
+
+                                        </div>
+                                    }
+
+                                    @if (!string.IsNullOrWhiteSpace(item.Notes))
+                                    {
+                                        <div class="text-danger ms-3">
+
+                                            Obs: @item.Notes
+
+                                        </div>
+                                    }
+
+                                </div>
+                            }
+
+                        </div>
+
+                        <div class="card-footer text-center">
+
+                            @if (order.Status == AngelesPizza.Enums.OrderStatus.Queued)
+                            {
+                                <button class="btn btn-warning btnChangeStatus"
+                                        data-id="@order.Id"
+                                        data-status="Preparing">
+
+                                    <i class="bi bi-fire"></i>
+
+                                    Preparar
+
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-success btnChangeStatus"
+                                        data-id="@order.Id"
+                                        data-status="Ready">
+
+                                    <i class="bi bi-check-circle"></i>
+
+                                    Marcar como Listo
+
+                                </button>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

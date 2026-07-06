@@ -1,0 +1,237 @@
+﻿@model AngelesPizza.Models.Order
+
+@{
+    ViewData["Title"] = "Recibir Pago";
+}
+
+<div class="container-fluid">
+
+    <div class="row">
+
+        <!-- Pedido -->
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    <strong>Pedido #@Model.OrderNumber</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table table-striped align-middle">
+
+                        <thead>
+
+                            <tr>
+                                <th>Producto</th>
+                                <th>Modificadores</th>
+                                <th class="text-end">Valor</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model.OrderDetails)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @item.Product.Name
+                                    </td>
+
+                                    <td>
+
+                                        @foreach (var modifier in item.OrderDetailModifiers)
+                                        {
+                                            <div>
+                                                + @modifier.ProductModifier.Name
+                                            </div>
+                                        }
+
+                                        @if (!string.IsNullOrWhiteSpace(item.Notes))
+                                        {
+                                            <div class="text-muted">
+                                                Obs: @item.Notes
+                                            </div>
+                                        }
+
+                                    </td>
+
+                                    <td class="text-end">
+
+                                        @{
+                                            var total = item.Price + item.OrderDetailModifiers.Sum(x => x.ExtraCost);
+                                        }
+
+                                        @total.ToString("N0")
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Totales -->
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    <strong>Resumen</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>SubTotal</span>
+                        <strong>@Model.SubTotal.ToString("N0")</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>IVA</span>
+                        <strong>@Model.Tax.ToString("N0")</strong>
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex justify-content-between">
+
+                        <h5>Total</h5>
+
+                        <h5>@Model.Total.ToString("N0")</h5>
+
+                    </div>
+
+                    <hr />
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Método de Pago
+                        </label>
+
+                        <select id="PaymentType" class="form-select">
+
+                            @foreach (var item in Enum.GetValues<AngelesPizza.Enums.PaymentType>())
+                            {
+                                <option value="@((int)item)">
+                                    @item
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Valor Recibido
+                        </label>
+
+                        <input id="ReceivedAmount"
+                               type="number"
+                               class="form-control"
+                               min="@Model.Total"
+                               value="@Model.Total" />
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Cambio
+                        </label>
+
+                        <input id="ChangeAmount"
+                               class="form-control"
+                               value="0"
+                               readonly />
+
+                    </div>
+
+                    <div class="d-grid">
+
+                        <button id="btnPay" class="btn btn-danger w-100">
+                            Cobrar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts{
+
+    <script>
+
+        function calculateChange() {
+
+            let total = @Model.Total;
+
+            let received = parseInt($("#ReceivedAmount").val()) || 0;
+
+            let change = received - total;
+
+            if (change < 0)
+                change = 0;
+
+            $("#ChangeAmount").val(change.toLocaleString());
+
+        }
+
+        $("#ReceivedAmount").on("keyup change", calculateChange);
+
+        calculateChange();
+
+                $("#btnPay").click(function () {
+
+            $.post("/Order/Pay", {
+
+                orderId: @Model.Id,
+                paymentType: $("#PaymentType").val(),
+                receivedAmount: $("#ReceivedAmount").val()
+
+            }, function (response) {
+
+                if (!response.ok) {
+
+                    alert(response.message);
+
+                    return;
+                }
+
+                window.open(
+                    "/Order/PrintTicket/" + response.orderId,
+                    "_blank",
+                    "width=420,height=700"
+                );
+
+                window.location.href = "/Order/New";
+
+            });
+
+        });
+
+    </script>
+
+
+}

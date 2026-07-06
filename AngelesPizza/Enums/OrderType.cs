@@ -2,8 +2,8 @@
 {
     public enum OrderType
     {
-        DineIn = 1,
-        Delivery = 2,
-        TakeAway = 3
+        Mesa = 1,
+        Domicilio = 2,
+        ParaLlevar = 3
     }
 }

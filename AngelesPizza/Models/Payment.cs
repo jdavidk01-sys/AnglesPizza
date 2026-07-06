@@ -18,6 +18,12 @@ namespace AngelesPizza.Models
         [Display(Name = "Valor")]
         public int Amount { get; set; }
 
+        [Display(Name = "Valor Recibido")]
+        public int ReceivedAmount { get; set; }
+
+        [Display(Name = "Cambio")]
+        public int ChangeAmount { get; set; }
+
         [Display(Name = "Fecha")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

@@ -1,0 +1,436 @@
+﻿@{
+    ViewData["Title"] = "Nuevo Pedido";
+}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+        Nuevo Pedido
+    </h2>
+
+    <div class="row">
+
+        <!-- PANEL IZQUIERDO -->
+        <div class="col-md-8">
+
+            <div class="card shadow-sm mb-3">
+
+                <div class="card-header">
+                    <strong>Pedido</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">Tipo de Pedido</label>
+
+                        <select name="OrderType" class="form-select" asp-items="ViewBag.OrderTypes">
+                            <option value=""></option>
+                        </select>
+
+                    </div>
+                    
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Cliente
+                        </label>
+
+                        <select id="CustomerId"
+                                class="form-select"
+                                asp-items="ViewBag.Customers">
+
+                            <option value=""></option>
+
+                        </select>
+
+                    </div>
+
+                    <hr />
+
+                    <h5>Categorías</h5>
+
+                    <div class="row g-2">
+
+                        @foreach (var category in ViewBag.Categories)
+                        {
+                            <div class="col-md-4">
+
+                                <button type="button" class="btn btn-outline-dark w-100 category-btn" data-id="@category.Id">
+                                    @category.Name
+                                </button>
+
+                            </div>
+                        }
+
+                    </div>
+
+                    <hr />
+
+                    <h5>Productos</h5>
+
+                    <div id="products" class="row g-2">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- PANEL DERECHO -->
+        <div class="col-md-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    <strong>Pedido Actual</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <div id="orderDetails">
+
+                        <div class="text-muted">
+                            No hay productos agregados.
+                        </div>
+
+                    </div>
+
+                    <hr />
+
+                    <h5>
+
+                        Total:
+                        <span id="orderTotal">
+                            $0
+                        </span>
+
+                    </h5>
+
+                    <button id="btnConfirmOrder" class="btn btn-danger w-100">
+                        Confirmar Pedido
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade" id="productModal" tabindex="-1">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title" id="productName">
+                    Producto
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="ProductId" />
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Observaciones
+                    </label>
+
+                    <textarea id="Notes"
+                              class="form-control"
+                              rows="3"></textarea>
+
+                </div>
+
+                <hr />
+
+                <h6>Modificadores</h6>
+
+                <div id="modifierList">
+
+                    <div class="text-muted">
+                        Cargando...
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                    Cancelar
+
+                </button>
+
+                <button type="button"
+                        id="btnAddProduct"
+                        class="btn btn-danger">
+
+                    Agregar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+
+        $(function () {
+
+            $(".category-btn").click(function () {
+
+                let categoryId = $(this).data("id");
+
+                $.get("/Order/GetProducts", { categoryId: categoryId }, function (products) {
+
+                    let html = "";
+
+                    products.forEach(function (p) {
+
+                        let image = p.hasImage
+                            ? `/Product/GetImage/${p.id}`
+                            : "/images/no-image.png";
+
+                        html += `
+                            <div class="col-md-3">
+
+                                <button class="btn btn-outline-dark w-100 product-btn"
+                                        data-id="${p.id}"
+                                        data-name="${p.name}">
+
+                                    <img src="${image}"
+                                         class="img-fluid rounded mb-2"
+                                         style="height:120px;object-fit:cover;" />
+
+                                    <div><strong>${p.name}</strong></div>
+
+                                    <small>$${p.price.toLocaleString()}</small>
+
+                                </button>
+
+                            </div>`;
+                    });
+
+                    $("#products").html(html);
+
+                });
+
+            });
+
+        });
+
+        $(document).on("click", ".product-btn", function () {
+
+            $("#ProductId").val($(this).data("id"));
+
+            $("#productName").text($(this).data("name"));
+
+            $("#Notes").val("");
+
+            $.get("/Order/GetModifiers", function (modifiers) {
+
+                let html = "";
+
+                modifiers.forEach(function (m) {
+
+                    html += `
+                        <div class="form-check">
+
+                            <input class="form-check-input modifier-check"
+                                   type="checkbox"
+                                   value="${m.id}"
+                                   data-cost="${m.extraCost}">
+
+                            <label class="form-check-label">
+
+                                ${m.name}
+                                (+$${m.extraCost.toLocaleString()})
+
+                            </label>
+
+                        </div>`;
+                });
+
+                $("#modifierList").html(html);
+
+                const modal = new bootstrap.Modal(document.getElementById("productModal"));
+                modal.show();
+
+            });
+
+        });
+
+        $("#btnAddProduct").click(function () {
+
+            let modifierIds = [];
+
+            $(".modifier-check:checked").each(function () {
+                modifierIds.push($(this).val());
+            });
+
+            $.post("/Order/AddProduct", {
+
+                productId: $("#ProductId").val(),
+                notes: $("#Notes").val(),
+                modifierIds: modifierIds
+
+            }, function (response) {
+
+                bootstrap.Modal.getInstance(
+                    document.getElementById("productModal")
+                ).hide();
+
+                loadOrder();
+
+            });
+
+        });
+
+        function loadOrder() {
+
+            $.get("/Order/GetCurrentOrder", function (items) {
+
+                let html = "";
+                let total = 0;
+
+                items.forEach(function (item, index) {
+
+                    total += item.total;
+
+                    html += `
+                        <div class="card mb-2">
+
+                            <div class="card-body p-2">
+
+                                <div class="d-flex justify-content-between">
+
+                                    <strong>${item.productName}</strong>
+
+                                    <button class="btn btn-sm btn-outline-danger remove-item"
+                                            data-index="${index}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+
+                                </div>`;
+
+                    if (item.modifierNames.length > 0) {
+
+                        html += `<div class="mt-2">`;
+
+                        item.modifierNames.forEach(function (m) {
+
+                            html += `<div class="text-primary small">
+                                        + ${m}
+                                     </div>`;
+                        });
+
+                        html += `</div>`;
+                    }
+
+                    if (item.notes) {
+
+                        html += `
+                            <div class="text-muted small mt-2">
+                                <strong>Obs:</strong> ${item.notes}
+                            </div>`;
+                    }
+
+                    html += `
+
+                                <div class="text-end mt-2">
+                                    <strong>$${item.total.toLocaleString()}</strong>
+                                </div>
+
+                            </div>
+
+                        </div>`;
+                });
+
+                if (items.length === 0) {
+
+                    html = `
+                        <div class="text-muted">
+                            No hay productos agregados.
+                        </div>`;
+                }
+
+                $("#orderDetails").html(html);
+
+                $("#orderTotal").text("$" + total.toLocaleString());
+
+            });
+
+        }
+
+        $(document).on("click", ".remove-item", function () {
+
+            let index = $(this).data("index");
+
+            $.post("/Order/RemoveProduct", {
+
+                index: index
+
+            }, function () {
+
+                loadOrder();
+
+            });
+
+        });
+
+
+        $("#btnConfirmOrder").click(function () {
+
+            $.post("/Order/Confirm", { orderType: $("#OrderType").val(), customerId: $("#CustomerId").val() },function (response) {
+
+                if (response.ok) {
+
+                    window.location.href = "/Order/ReceivePayment/" + response.orderId;
+
+                }
+
+            });
+
+        });
+
+        $(function () {
+
+            new TomSelect("#CustomerId", {
+                create: false,
+                allowEmptyOption: true,
+                placeholder: "Buscar cliente..."
+            });
+
+        });
+
+    </script>
+
+
+}

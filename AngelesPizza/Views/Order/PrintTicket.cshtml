@@ -1,0 +1,183 @@
+﻿@model AngelesPizza.Models.Order
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>Ticket @Model.OrderNumber</title>
+
+    <style>
+
+        h2, h4, p {
+            margin: 0;
+            text-align: center;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px dashed #000;
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .small {
+            font-size: 11px;
+        }
+
+            @@media print {
+
+                body {
+                    width: auto;
+                    margin: 0;
+                    padding: 0;
+                    box-shadow: none;
+                }
+
+                @@page {
+                    size: 80mm auto;
+                    margin: 3mm;
+                }
+            }
+
+            body {
+                width: 80mm;
+                min-height: 100vh;
+                margin: 20px auto;
+                padding: 5mm;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 12px;
+                background: white;
+                box-shadow: 0 0 10px rgba(0,0,0,.2);
+            }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h2>ÁNGELES PIZZA</h2>
+
+    <p>Pedido #@Model.OrderNumber</p>
+
+    <p>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+
+    <hr />
+
+    @foreach (var item in Model.OrderDetails)
+    {
+        var total = item.Price + item.OrderDetailModifiers.Sum(x => x.ExtraCost);
+
+        <strong>@item.Product.Name</strong>
+
+        @foreach (var modifier in item.OrderDetailModifiers)
+        {
+            <div class="small">
+                + @modifier.ProductModifier.Name
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(item.Notes))
+        {
+            <div class="small">
+                Obs: @item.Notes
+            </div>
+        }
+
+        <div class="right">
+            @total.ToString("N0")
+        </div>
+
+        <br />
+    }
+
+    <hr />
+
+    <table>
+
+        <tr>
+            <td>Subtotal</td>
+            <td class="right">@Model.SubTotal.ToString("N0")</td>
+        </tr>
+
+        <tr>
+            <td>IVA</td>
+            <td class="right">@Model.Tax.ToString("N0")</td>
+        </tr>
+
+        <tr>
+            <td><strong>Total</strong></td>
+            <td class="right"><strong>@Model.Total.ToString("N0")</strong></td>
+        </tr>
+
+    </table>
+
+    @if (Model.Payments.Any())
+    {
+        var payment = Model.Payments.First();
+
+        <hr />
+
+        <table>
+
+            <tr>
+                <td>Pago</td>
+                <td class="right">@payment.PaymentType</td>
+            </tr>
+
+            <tr>
+                <td>Recibido</td>
+                <td class="right">@payment.ReceivedAmount.ToString("N0")</td>
+            </tr>
+
+            <tr>
+                <td>Cambio</td>
+                <td class="right">@payment.ChangeAmount.ToString("N0")</td>
+            </tr>
+
+        </table>
+    }
+
+    <hr />
+
+    <p>¡Gracias por su compra!</p>
+
+    <script>
+
+        window.onload = function () {
+
+            window.print();
+
+        };
+
+        window.onafterprint = function () {
+
+            window.close();
+
+        };
+
+    </script>
+
+</body>
+
+</html>
