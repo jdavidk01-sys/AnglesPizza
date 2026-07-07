@@ -25,7 +25,7 @@
 
                         <label class="form-label">Tipo de Pedido</label>
 
-                        <select name="OrderType" class="form-select" asp-items="ViewBag.OrderTypes">
+                        <select id="OrderType" name="OrderType" class="form-select" asp-items="ViewBag.OrderTypes">
                             <option value=""></option>
                         </select>
 
@@ -406,19 +406,33 @@
         });
 
 
-        $("#btnConfirmOrder").click(function () {
+$("#btnConfirmOrder").click(function () {
 
-            $.post("/Order/Confirm", { orderType: $("#OrderType").val(), customerId: $("#CustomerId").val() },function (response) {
+    let btn = $(this);
 
-                if (response.ok) {
+    btn.prop("disabled", true);
 
-                    window.location.href = "/Order/ReceivePayment/" + response.orderId;
+    $.post("/Order/Confirm", {
 
-                }
+        orderType: $("#OrderType").val(),
+        customerId: $("#CustomerId").val()
 
-            });
+    }, function (response) {
 
-        });
+        if (response.ok) {
+
+            window.location.href = "/Order/ReceivePayment/" + response.orderId;
+
+        }
+        else {
+
+            btn.prop("disabled", false);
+
+        }
+
+    });
+
+});
 
         $(function () {
 

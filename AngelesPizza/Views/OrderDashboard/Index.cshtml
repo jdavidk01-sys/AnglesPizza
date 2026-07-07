@@ -1,0 +1,240 @@
+﻿@model IEnumerable<AngelesPizza.Models.Order>
+
+@{
+    ViewData["Title"] = "Pedidos Activos";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Pedidos Activos</h2>
+
+        <span class="badge bg-primary fs-6">
+            @Model.Count() Pedido(s)
+        </span>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-success">
+
+            <i class="bi bi-check-circle"></i>
+
+            No existen pedidos activos.
+
+        </div>
+    }
+    else
+    {
+        <div class="row">
+
+            @foreach (var order in Model)
+            {
+                <div class="col-lg-4 mb-4">
+
+                    <div class="card shadow-sm h-100">
+
+                        <div class="card-header">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <strong>
+                                    Pedido #@order.OrderNumber
+                                </strong>
+
+                                <span class="badge @(((Func<AngelesPizza.Enums.OrderStatus, string>)ViewBag.StatusClass)(order.Status))">
+                                    @order.Status
+                                </span>
+
+                            </div>
+
+                            <small class="text-muted">
+
+                                @order.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+
+                                <br />
+
+                                <span class="order-time"
+                                      data-created="@order.CreatedAt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")">
+                                </span>
+
+                            </small>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            @if (order.Customer != null)
+                            {
+                                <div>
+                                    <strong>Cliente:</strong> @order.Customer.Name
+                                </div>
+                            }
+
+                            <div>
+                                <strong>Tipo:</strong> @order.OrderType
+                            </div>
+
+                            <hr />
+
+                            @foreach (var item in order.OrderDetails)
+                            {
+                                <div class="mb-2">
+
+                                    <strong>
+                                        @item.Product.Name
+                                    </strong>
+
+                                    @foreach (var modifier in item.OrderDetailModifiers)
+                                    {
+                                        <div class="ms-3">
+                                            + @modifier.ProductModifier.Name
+                                        </div>
+                                    }
+
+                                    @if (!string.IsNullOrWhiteSpace(item.Notes))
+                                    {
+                                        <div class="ms-3 text-danger">
+                                            Obs: @item.Notes
+                                        </div>
+                                    }
+
+                                </div>
+                            }
+
+                        </div>
+
+                        <div class="card-footer">
+
+                            <div class="d-flex gap-2">
+
+                                <a asp-controller="OrderDashboard"
+                                   asp-action="Edit"
+                                   asp-route-id="@order.Id"
+                                   class="btn btn-outline-danger w-50">
+
+                                    <i class="bi bi-pencil-square"></i>
+
+                                    Editar
+
+                                </a>
+
+                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Created)
+                                {
+                                    <button class="btn btn-warning btnStatus w-50"
+                                            data-id="@order.Id"
+                                            data-status="Queued">
+
+                                        Confirmar Pedido
+
+                                    </button>
+                                }
+
+                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Queued)
+                                {
+                                    <button class="btn btn-primary btnStatus w-50"
+                                            data-id="@order.Id"
+                                            data-status="Preparing">
+
+                                        Preparar
+
+                                    </button>
+                                }
+
+                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Preparing)
+                                {
+                                    <button class="btn btn-success btnStatus w-50"
+                                            data-id="@order.Id"
+                                            data-status="Ready">
+
+                                        Marcar como Listo
+
+                                    </button>
+                                }
+
+                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Ready)
+                                {
+                                    <button class="btn btn-dark btnStatus w-50"
+                                            data-id="@order.Id"
+                                            data-status="Delivered">
+
+                                        Entregar
+
+                                    </button>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>
+
+@section Scripts{
+
+    <script>
+
+        function updateOrderTimes() {
+
+            $(".order-time").each(function () {
+
+
+                const created = new Date(this.dataset.created);
+                const now = new Date();
+
+
+                const minutes = Math.floor((now - created) / 60000);
+
+                if (minutes < 60) {
+
+                    $(this).html("⏱ " + minutes + " min");
+
+                }
+                else {
+
+                    const hours = Math.floor(minutes / 60);
+                    const mins = minutes % 60;
+
+                    $(this).html("⏱ " + hours + " h " + mins + " min");
+
+                }
+
+            });
+
+        }
+
+        updateOrderTimes();
+
+        setInterval(updateOrderTimes, 1000);
+
+        $(document).on("click", ".btnStatus", function () {
+
+            $.post("/OrderDashboard/ChangeStatus", {
+
+                id: $(this).data("id"),
+                status: $(this).data("status")
+
+            }, function (response) {
+
+                if (response.ok) {
+
+                    location.reload();
+
+                }
+
+            });
+
+        });
+
+    </script>
+
+}

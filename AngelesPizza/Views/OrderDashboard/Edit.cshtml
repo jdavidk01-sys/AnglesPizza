@@ -1,0 +1,173 @@
+﻿@model AngelesPizza.Models.Order
+
+@{
+    ViewData["Title"] = "Editar Pedido";
+}
+
+<div class="container-fluid">
+
+    <div class="row">
+
+        <div class="col-lg-3">
+
+            <div class="card shadow-sm mb-3">
+
+                <div class="card-header">
+                    Pedido #@Model.OrderNumber
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Tipo de Pedido
+                        </label>
+
+                        <select id="OrderType"
+                                class="form-select"
+                                asp-items="ViewBag.OrderTypes">
+                        </select>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Cliente
+                        </label>
+
+                        <select id="CustomerId"
+                                class="form-select"
+                                asp-items="ViewBag.Customers">
+
+                            <option value="">Buscar Cliente</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    Categorías
+                </div>
+
+                <div class="list-group list-group-flush">
+
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        <button type="button"
+                                class="list-group-item list-group-item-action btnCategory"
+                                data-id="@category.Id">
+
+                            @category.Name
+
+                        </button>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-5">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    Productos
+                </div>
+
+                <div id="productsContainer"
+                     class="card-body">
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    Pedido
+                </div>
+
+                <div class="card-body">
+
+                    <div id="orderContainer">
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex gap-2">
+
+                        <button id="btnSave"
+                                class="btn btn-danger w-50">
+
+                            <i class="bi bi-check-circle"></i>
+
+                            Guardar Cambios
+
+                        </button>
+
+                        <button id="btnCancelOrder"
+                                class="btn btn-outline-warning w-50">
+
+                            <i class="bi bi-x-circle"></i>
+
+                            Cancelar Pedido
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+
+        new TomSelect("#CustomerId",{
+            create:false
+        });
+
+        $("#btnCancelOrder").click(function () {
+
+            if (!confirm("¿Desea cancelar este pedido?"))
+                return;
+
+            $.post("/OrderDashboard/Cancel", {
+
+                id: @Model.Id
+
+            }, function (response) {
+
+                if (response.ok) {
+
+                    window.location.href = "/OrderDashboard";
+
+                }
+
+            });
+
+        });
+
+    </script>
+
+}
