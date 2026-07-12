@@ -10,8 +10,8 @@
 
         <h2>Pedidos Activos</h2>
 
-        <span class="badge bg-primary fs-6">
-            @Model.Count() Pedido(s)
+        <span class="badge bg-success fs-6">
+            @Model.Count() Pedidos
         </span>
 
     </div>
@@ -44,7 +44,7 @@
                                     Pedido #@order.OrderNumber
                                 </strong>
 
-                                <span class="badge @(((Func<AngelesPizza.Enums.OrderStatus, string>)ViewBag.StatusClass)(order.Status))">
+                                <span class="badge bg-success">
                                     @order.Status
                                 </span>
 
@@ -74,8 +74,15 @@
                             }
 
                             <div>
-                                <strong>Tipo:</strong> @order.OrderType
+                                <strong>Tipo pedido:</strong> @order.OrderType
                             </div>
+
+                            @if (order.RestaurantTable != null)
+                            {
+                                <div>
+                                    <strong>Mesa:</strong> @order.RestaurantTable.Name
+                                </div>
+                            }
 
                             <hr />
 
@@ -134,7 +141,7 @@
 
                                 @if (order.Status == AngelesPizza.Enums.OrderStatus.Queued)
                                 {
-                                    <button class="btn btn-outline-secondary btnStatus w-50"
+                                    <button class="btn btn-warning btnStatus w-50"
                                             data-id="@order.Id"
                                             data-status="Preparing">
 
@@ -145,7 +152,7 @@
 
                                 @if (order.Status == AngelesPizza.Enums.OrderStatus.Preparing)
                                 {
-                                    <button class="btn btn-outline-success btnStatus w-50"
+                                    <button class="btn btn-warning btnStatus w-50"
                                             data-id="@order.Id"
                                             data-status="Ready">
 
@@ -156,7 +163,7 @@
 
                                 @if (order.Status == AngelesPizza.Enums.OrderStatus.Ready)
                                 {
-                                    <button class="btn btn-outline-dark btnStatus w-50"
+                                    <button class="btn btn-success btnStatus w-50"
                                             data-id="@order.Id"
                                             data-status="Delivered">
 

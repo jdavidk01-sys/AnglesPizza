@@ -84,6 +84,10 @@
 
     <hr />
 
+    <p>Pedido #@Model.RestaurantTable</p>
+
+    <hr />
+
     @foreach (var item in Model.OrderDetails)
     {
         var total = item.Price + item.OrderDetailModifiers.Sum(x => x.ExtraCost);

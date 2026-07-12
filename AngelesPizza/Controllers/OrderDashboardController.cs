@@ -21,6 +21,7 @@ namespace AngelesPizza.Controllers
         {
             var orders = await _context.Orders
                 .Include(o => o.Customer)
+                .Include(x => x.RestaurantTable)
                 .Include(o => o.OrderDetails)
                     .ThenInclude(d => d.Product)
                 .Include(o => o.OrderDetails)

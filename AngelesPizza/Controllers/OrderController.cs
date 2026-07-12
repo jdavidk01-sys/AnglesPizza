@@ -65,6 +65,13 @@ public class OrderController : Controller
             "Id",
             "Name");
 
+        ViewBag.Tables = new SelectList(
+            _context.RestaurantTables
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.Name),
+            "Id",
+            "Name");
+
         return View();
     }
 
@@ -181,7 +188,7 @@ public class OrderController : Controller
 
     //Crear pedido
     [HttpPost]
-    public async Task<IActionResult> Confirm(OrderType orderType, int? customerId)
+    public async Task<IActionResult> Confirm(OrderType orderType, int? customerId, int? restaurantTableId)
     {
         var tempOrder = HttpContext.Session
             .GetObject<List<TempOrderItem>>("ORDER");
@@ -189,12 +196,22 @@ public class OrderController : Controller
         if (tempOrder == null || !tempOrder.Any())
             return Json(new { ok = false });
 
+        if (orderType == OrderType.Mesa && restaurantTableId == null)
+        {
+            return Json(new
+            {
+                ok = false,
+                message = "Debes seleccionar una mesa."
+            });
+        }
+
         var order = new Order
         {
             OrderNumber = await _context.Orders.CountAsync() + 1,
             CreatedAt = DateTime.UtcNow,
             OrderType = orderType,
             CustomerId = customerId,
+            RestaurantTableId = restaurantTableId,
             Status = OrderStatus.Created
         };
 
