@@ -13,7 +13,7 @@
             <div class="card shadow-sm mb-3">
 
                 <div class="card-header">
-                    Pedido #@Model.OrderNumber
+                    <strong>Pedido #@Model.OrderNumber</strong>
                 </div>
 
                 <div class="card-body">
@@ -81,7 +81,7 @@
             <div class="card shadow-sm">
 
                 <div class="card-header">
-                    Productos
+                    <strong>Productos</strong>
                 </div>
 
                 <div id="productsContainer"
@@ -97,7 +97,7 @@
             <div class="card shadow-sm">
 
                 <div class="card-header">
-                    Pedido
+                    <strong>Pedido Actual</strong>
                 </div>
 
                 <div class="card-body">
@@ -109,17 +109,17 @@
 
                     <div class="d-flex gap-2">
 
-                        <button id="btnSave"
+                        <button id="btnFinish"
                                 class="btn btn-danger w-50">
 
                             <i class="bi bi-check-circle"></i>
 
-                            Guardar Cambios
+                            Finalizar Edición
 
                         </button>
 
                         <button id="btnCancelOrder"
-                                class="btn btn-outline-warning w-50">
+                                class="btn btn-warning w-50">
 
                             <i class="bi bi-x-circle"></i>
 
@@ -139,14 +139,102 @@
 
 </div>
 
+<div class="modal fade" id="productModal" tabindex="-1">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title" id="productName">
+                    Producto
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="ProductId" />
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Observaciones
+                    </label>
+
+                    <textarea id="Notes"
+                              class="form-control"
+                              rows="3"></textarea>
+
+                </div>
+
+                <hr />
+
+                <h6>Modificadores</h6>
+
+                <div id="modifierList">
+
+                    <div class="text-muted">
+                        Cargando...
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                    Cancelar
+
+                </button>
+
+                <button type="button"
+                        id="btnAddProduct"
+                        class="btn btn-danger">
+
+                    Agregar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 @section Scripts {
 
     <script>
 
-        new TomSelect("#CustomerId",{
-            create:false
+        const orderId = @Model.Id;
+        let selectedProductId = 0;
+
+        new TomSelect("#CustomerId", {
+            create: false
         });
 
+        $(document).ready(function () {
+
+            loadOrder();
+
+            $(".btnCategory").first().trigger("click");
+
+        });
+
+        // Cancelar pedido
         $("#btnCancelOrder").click(function () {
 
             if (!confirm("¿Desea cancelar este pedido?"))
@@ -154,7 +242,7 @@
 
             $.post("/OrderDashboard/Cancel", {
 
-                id: @Model.Id
+                id: orderId
 
             }, function (response) {
 
@@ -165,6 +253,277 @@
                 }
 
             });
+
+        });
+
+        // Cargar pedido
+        function loadOrder() {
+
+            $.get("/OrderDashboard/GetOrder/" + orderId, function (items) {
+
+                let html = "";
+                let total = 0;
+
+                $.each(items, function (i, item) {
+
+                    total += item.total;
+
+                    html += `
+                        <div class="card mb-2">
+
+                            <div class="card-body">
+
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <strong>${item.product}</strong>
+
+                                    <div>
+
+                                        <strong class="me-3">
+                                            $ ${item.total.toLocaleString()}
+                                        </strong>
+
+                                        <button class="btn btn-sm btn-outline-danger btnRemoveProduct"
+                                                data-id="${item.detailId}">
+
+                                            <i class="bi bi-trash"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+                    `;
+
+                    $.each(item.modifiers, function (j, modifier) {
+
+                        html += `
+                            <div class="ms-3 text-muted">
+
+                                + ${modifier.name}
+
+                            </div>
+                        `;
+
+                    });
+
+                    if (item.notes) {
+
+                        html += `
+                            <div class="ms-3 text-danger">
+
+                                Obs: ${item.notes}
+
+                            </div>
+                        `;
+
+                    }
+
+                    html += `
+
+                            </div>
+
+                        </div>
+                    `;
+
+                });
+
+                html += `
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+
+                        <strong>Total</strong>
+
+                        <strong>$ ${total.toLocaleString()}</strong>
+
+                    </div>
+                `;
+
+                $("#orderContainer").html(html);
+
+            });
+
+        }
+
+        // Cargar productos por categoría
+        function loadProducts(categoryId) {
+
+            $.get("/Order/GetProducts", {
+
+                categoryId: categoryId
+
+            }, function (products) {
+
+                let html = "";
+
+                $.each(products, function (i, product) {
+
+                    let image = product.hasImage
+                        ? "/Product/GetImage/" + product.id
+                        : "/img/no-image.png";
+
+                    html += `
+                        <div class="card mb-2 product-card"
+                             data-id="${product.id}"
+                             data-name="${product.name}"
+                             style="cursor:pointer;">
+
+                            <div class="row g-0">
+
+                                <div class="col-3">
+
+                                    <img src="${image}"
+                                         class="img-fluid rounded-start"
+                                         style="height:90px;width:100%;object-fit:cover;">
+
+                                </div>
+
+                                <div class="col-9">
+
+                                    <div class="card-body">
+
+                                        <h6>${product.name}</h6>
+
+                                        <strong>$ ${product.price.toLocaleString()}</strong>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    `;
+
+                });
+
+                $("#productsContainer").html(html);
+
+            });
+
+        }
+
+        // Seleccionar categoría
+        $(document).on("click", ".btnCategory", function () {
+
+            loadProducts($(this).data("id"));
+
+        });
+
+        // Seleccionar producto
+        $(document).on("click", ".product-card", function () {
+
+            selectedProductId = $(this).data("id");
+
+            $("#ProductId").val(selectedProductId);
+
+            $("#productName").text($(this).data("name"));
+
+            $("#Notes").val("");
+
+            $.get("/Order/GetModifiers", function (modifiers) {
+
+                let html = "";
+
+                $.each(modifiers, function (i, modifier) {
+
+                    html += `
+                        <div class="form-check">
+
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="ModifierIds"
+                                   value="${modifier.id}"
+                                   id="mod${modifier.id}">
+
+                            <label class="form-check-label"
+                                   for="mod${modifier.id}">
+
+                                ${modifier.name}
+                                (+$ ${modifier.extraCost.toLocaleString()})
+
+                            </label>
+
+                        </div>
+                    `;
+
+                });
+
+                $("#modifierList").html(html);
+
+                const modal = new bootstrap.Modal(document.getElementById("productModal"));
+
+                modal.show();
+
+            });
+
+        });
+
+        // Agregar producto
+        $("#btnAddProduct").click(function () {
+
+            $.post("/OrderDashboard/AddProduct", {
+
+                orderId: orderId,
+                productId: selectedProductId,
+                notes: $("#Notes").val(),
+                modifierIds: $("input[name='ModifierIds']:checked")
+                    .map(function () {
+
+                        return parseInt($(this).val());
+
+                    }).get()
+
+            }, function (response) {
+
+                if (!response.ok) {
+
+                    alert("No fue posible agregar el producto.");
+
+                    return;
+
+                }
+
+                bootstrap.Modal
+                    .getInstance(document.getElementById("productModal"))
+                    .hide();
+
+                loadOrder();
+
+            });
+
+        });
+
+        //Eliminar producto
+
+        $(document).on("click", ".btnRemoveProduct", function () {
+
+            if (!confirm("¿Eliminar este producto del pedido?"))
+                return;
+
+            $.post("/OrderDashboard/RemoveProduct", {
+
+                detailId: $(this).data("id")
+
+            }, function (response) {
+
+                if (!response.ok) {
+
+                    alert("No fue posible eliminar el producto.");
+                    return;
+
+                }
+
+                loadOrder();
+
+            });
+
+        });
+
+        $("#btnFinish").click(function () {
+
+            window.location.href = "/OrderDashboard";
 
         });
 

@@ -123,7 +123,7 @@
 
                                 @if (order.Status == AngelesPizza.Enums.OrderStatus.Created)
                                 {
-                                    <button class="btn btn-warning btnStatus w-50"
+                                    <button class="btn btn-outline-warning btnStatus w-50"
                                             data-id="@order.Id"
                                             data-status="Queued">
 
@@ -134,7 +134,7 @@
 
                                 @if (order.Status == AngelesPizza.Enums.OrderStatus.Queued)
                                 {
-                                    <button class="btn btn-primary btnStatus w-50"
+                                    <button class="btn btn-outline-secondary btnStatus w-50"
                                             data-id="@order.Id"
                                             data-status="Preparing">
 
@@ -145,7 +145,7 @@
 
                                 @if (order.Status == AngelesPizza.Enums.OrderStatus.Preparing)
                                 {
-                                    <button class="btn btn-success btnStatus w-50"
+                                    <button class="btn btn-outline-success btnStatus w-50"
                                             data-id="@order.Id"
                                             data-status="Ready">
 
@@ -156,7 +156,7 @@
 
                                 @if (order.Status == AngelesPizza.Enums.OrderStatus.Ready)
                                 {
-                                    <button class="btn btn-dark btnStatus w-50"
+                                    <button class="btn btn-outline-dark btnStatus w-50"
                                             data-id="@order.Id"
                                             data-status="Delivered">
 
