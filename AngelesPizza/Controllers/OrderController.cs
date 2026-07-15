@@ -336,6 +336,8 @@ public class OrderController : Controller
     public async Task<IActionResult> PrintTicket(int id)
     {
         var order = await _context.Orders
+            .Include(o => o.Customer)
+            .Include(o => o.RestaurantTable)
             .Include(o => o.Payments)
             .Include(o => o.OrderDetails)
                 .ThenInclude(d => d.Product)
@@ -346,6 +348,27 @@ public class OrderController : Controller
 
         if (order == null)
             return NotFound();
+
+        return View(order);
+    }
+
+    //Impresion Comanda
+    public async Task<IActionResult> PrintKitchen(int id, string copy = "COCINA")
+    {
+        var order = await _context.Orders
+            .Include(o => o.Customer)
+            .Include(o => o.RestaurantTable)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(d => d.Product)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(d => d.OrderDetailModifiers)
+                    .ThenInclude(m => m.ProductModifier)
+            .FirstOrDefaultAsync(o => o.Id == id);
+
+        if (order == null)
+            return NotFound();
+
+        ViewBag.Copy = copy;
 
         return View(order);
     }

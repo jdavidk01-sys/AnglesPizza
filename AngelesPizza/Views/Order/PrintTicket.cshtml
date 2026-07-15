@@ -84,7 +84,10 @@
 
     <hr />
 
-    <p>Pedido #@Model.RestaurantTable</p>
+    @if (Model.RestaurantTable != null)
+    {
+        <p>Mesa: @Model.RestaurantTable.Name</p>
+    }
 
     <hr />
 
@@ -168,17 +171,17 @@
 
     <script>
 
-        window.onload = function () {
+            window.onload = function () {
 
-            window.print();
+                window.print();
 
-        };
+                setTimeout(function () {
 
-        window.onafterprint = function () {
+                    window.location.href = "/Order/PrintKitchen/@Model.Id?copy=COCINA";
 
-            window.close();
+                }, 1000);
 
-        };
+            };
 
     </script>
 

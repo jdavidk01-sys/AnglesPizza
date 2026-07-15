@@ -10,11 +10,24 @@
 
         <h2>Pedidos Activos</h2>
 
-        <span class="badge bg-success fs-6">
-            @Model.Count() Pedidos
-        </span>
+        <div class="d-flex ms-auto align-items-center gap-2">
+            <span class="badge bg-success fs-6">
+                @Model.Count() Pedidos
+            </span>
+
+        
+            <a asp-controller="Order"
+               asp-action="New"
+               class="btn btn-danger">
+
+                Nuevo Pedido
+
+            </a>
+        </div>
 
     </div>
+
+    <hr />
 
     @if (!Model.Any())
     {

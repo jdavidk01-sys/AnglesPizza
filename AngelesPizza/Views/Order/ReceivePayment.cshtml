@@ -219,13 +219,7 @@
                     return;
                 }
 
-                window.open(
-                    "/Order/PrintTicket/" + response.orderId,
-                    "_blank",
-                    "width=420,height=700"
-                );
-
-                window.location.href = "/OrderDashboard";
+                window.location.href = "/Order/PrintTicket/" + response.orderId;
 
             });
 
