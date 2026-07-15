@@ -84,7 +84,12 @@
 
     <p><strong>Pedido #@Model.OrderNumber</strong></p>
 
-    <p>@Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</p>
+    <p>
+        @TimeZoneInfo.ConvertTimeFromUtc(
+            Model.CreatedAt,
+            TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time")
+        ).ToString("dd/MM/yyyy HH:mm")
+    </p>
 
     <hr />
 
