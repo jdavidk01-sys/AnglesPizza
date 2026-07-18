@@ -22,5 +22,7 @@ namespace AngelesPizza.Models
         // Navegación
         [ValidateNever] 
         public ICollection<OrderDetailModifier> OrderDetailModifiers { get; set; } = new List<OrderDetailModifier>();
+
+        public ICollection<ProductModifierProduct> Products { get; set; } = new List<ProductModifierProduct>();
     }
 }

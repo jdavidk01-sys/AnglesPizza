@@ -214,7 +214,7 @@
 
                 <hr />
 
-                <h6>Adicionales</h6>
+                <h6>Adicionales o sabores</h6>
 
                 <div id="modifierList">
 
@@ -397,46 +397,60 @@
 
         });
 
-        $(document).on("click", ".product-btn", function () {
+$(document).on("click", ".product-btn", function () {
 
-            $("#ProductId").val($(this).data("id"));
+    const productId = $(this).data("id");
 
-            $("#productName").text($(this).data("name"));
+    $("#ProductId").val(productId);
 
-            $("#Notes").val("");
+    $("#productName").text($(this).data("name"));
 
-            $.get("/Order/GetModifiers", function (modifiers) {
+    $("#Notes").val("");
 
-                let html = "";
+    $.get("/Order/GetModifiers",
+    {
+        productId: productId
+    },
+    function (modifiers) {
 
-                modifiers.forEach(function (m) {
+        let html = "";
 
-                    html += `
-                        <div class="form-check">
+        modifiers.forEach(function (m) {
 
-                            <input class="form-check-input modifier-check"
-                                   type="checkbox"
-                                   value="${m.id}"
-                                   data-cost="${m.extraCost}">
+            html += `
+                <div class="form-check">
 
-                            <label class="form-check-label">
+                    <input class="form-check-input modifier-check"
+                           type="checkbox"
+                           value="${m.id}"
+                           data-cost="${m.extraCost}">
 
-                                ${m.name}
-                                (+$${m.extraCost.toLocaleString()})
+                    <label class="form-check-label">
 
-                            </label>
+                        ${m.name}
+                        +$${m.extraCost.toLocaleString()}
 
-                        </div>`;
-                });
+                    </label>
 
-                $("#modifierList").html(html);
-
-                const modal = new bootstrap.Modal(document.getElementById("productModal"));
-                modal.show();
-
-            });
-
+                </div>`;
         });
+
+        if (modifiers.length === 0) {
+
+            html = `
+                <div class="text-muted">
+                    Este producto no tiene modificadores.
+                </div>`;
+        }
+
+        $("#modifierList").html(html);
+
+        const modal = new bootstrap.Modal(document.getElementById("productModal"));
+        modal.show();
+
+    });
+
+});
 
         $("#btnAddProduct").click(function () {
 

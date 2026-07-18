@@ -97,16 +97,16 @@ public class OrderController : Controller
 
     //Carga modificadores
     [HttpGet]
-    public async Task<IActionResult> GetModifiers()
+    public async Task<IActionResult> GetModifiers(int productId)
     {
-        var modifiers = await _context.ProductModifiers
-            .Where(m => m.IsActive)
-            .OrderBy(m => m.Name)
-            .Select(m => new
+        var modifiers = await _context.ProductModifierProducts
+            .Where(x => x.ProductId == productId && x.ProductModifier.IsActive)
+            .OrderBy(x => x.ProductModifier.Name)
+            .Select(x => new
             {
-                m.Id,
-                m.Name,
-                m.ExtraCost
+                x.ProductModifier.Id,
+                x.ProductModifier.Name,
+                x.ProductModifier.ExtraCost
             })
             .ToListAsync();
 

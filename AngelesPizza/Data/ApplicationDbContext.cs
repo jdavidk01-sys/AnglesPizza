@@ -32,6 +32,8 @@ namespace AngelesPizza.Data
 
         public DbSet<Payment> Payments { get; set; }
 
+        public DbSet<ProductModifierProduct> ProductModifierProducts { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
