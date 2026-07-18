@@ -37,6 +37,37 @@
 
 </div>
 
+<div class="mb-3">
+
+    <label class="form-label">
+        Productos relacionados a este nuevo Adicional o sabor (opcional)
+    </label>
+
+    <div class="border rounded p-3" style="max-height:300px; overflow-y:auto;">
+
+        @foreach (var product in (IEnumerable<AngelesPizza.Models.Product>)ViewBag.Products)
+        {
+            <div class="form-check">
+
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="ProductIds"
+                       value="@product.Id"
+                @((Model?.ProductIds?.Contains(product.Id) ?? false) ? "checked" : null) />
+
+                <label class="form-check-label">
+
+                    @product.Name
+
+                </label>
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
 <div class="form-check form-switch mb-4">
 
     <input asp-for="IsActive"

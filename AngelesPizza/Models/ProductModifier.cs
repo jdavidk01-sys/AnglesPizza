@@ -1,6 +1,7 @@
 ﻿using AngelesPizza.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AngelesPizza.Models
 {
@@ -23,6 +24,10 @@ namespace AngelesPizza.Models
         [ValidateNever] 
         public ICollection<OrderDetailModifier> OrderDetailModifiers { get; set; } = new List<OrderDetailModifier>();
 
-        public ICollection<ProductModifierProduct> Products { get; set; } = new List<ProductModifierProduct>();
+        [ValidateNever]
+        public ICollection<ProductModifierProduct> ProductModifierProducts { get; set; } = new List<ProductModifierProduct>();
+
+        [NotMapped]
+        public List<int> ProductIds { get; set; } = new();
     }
 }

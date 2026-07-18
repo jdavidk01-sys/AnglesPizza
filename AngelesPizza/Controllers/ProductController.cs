@@ -75,6 +75,17 @@ namespace AngelesPizza.Controllers
             _context.Products.Add(model);
             await _context.SaveChangesAsync();
 
+            foreach (var modifierId in model.ModifierIds)
+            {
+                _context.ProductModifierProducts.Add(new ProductModifierProduct
+                {
+                    ProductId = model.Id,
+                    ProductModifierId = modifierId
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
             TempData["Success"] = "El producto fue creado correctamente.";
 
             return RedirectToAction(nameof(Index));
@@ -85,10 +96,16 @@ namespace AngelesPizza.Controllers
         // ===========================
         public async Task<IActionResult> Edit(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products
+                .Include(x => x.ProductModifierProducts)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (product == null)
                 return NotFound();
+
+            product.ModifierIds = product.ProductModifierProducts
+                .Select(x => x.ProductModifierId)
+                .ToList();
 
             await LoadCategories();
 
@@ -125,6 +142,21 @@ namespace AngelesPizza.Controllers
                 product.ImageData = ms.ToArray();
             }
 
+            var relations = await _context.ProductModifierProducts
+                .Where(x => x.ProductId == product.Id)
+                .ToListAsync();
+
+            _context.ProductModifierProducts.RemoveRange(relations);
+
+            foreach (var modifierId in model.ModifierIds)
+            {
+                _context.ProductModifierProducts.Add(new ProductModifierProduct
+                {
+                    ProductId = product.Id,
+                    ProductModifierId = modifierId
+                });
+            }
+
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "El producto fue actualizado correctamente.";
@@ -154,6 +186,11 @@ namespace AngelesPizza.Controllers
                     .ToListAsync(),
                 "Id",
                 "Name");
+
+            ViewBag.Modifiers = await _context.ProductModifiers
+                    .Where(x => x.IsActive)
+                    .OrderBy(x => x.Name)
+                    .ToListAsync();
         }
     }
 }

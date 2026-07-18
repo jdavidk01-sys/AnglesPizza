@@ -59,6 +59,17 @@ namespace AngelesPizza.Controllers
             _context.ProductModifiers.Add(model);
             await _context.SaveChangesAsync();
 
+            foreach (var productId in model.ProductIds)
+            {
+                _context.ProductModifierProducts.Add(new ProductModifierProduct
+                {
+                    ProductId = productId,
+                    ProductModifierId = model.Id
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
             TempData["Success"] = "Modificador creado correctamente.";
 
             return RedirectToAction(nameof(Index), new { showAll = true });
@@ -69,13 +80,19 @@ namespace AngelesPizza.Controllers
         //==========================================
         public async Task<IActionResult> Edit(int id)
         {
-            var modifier = await _context.ProductModifiers.FindAsync(id);
+            var modifier = await _context.ProductModifiers
+                .Include(x => x.ProductModifierProducts)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (modifier == null)
             {
                 TempData["Error"] = "Modificador no encontrado.";
                 return RedirectToAction(nameof(Index));
             }
+
+            modifier.ProductIds = modifier.ProductModifierProducts
+                .Select(x => x.ProductId)
+                .ToList();
 
             await LoadProducts();
 
@@ -107,6 +124,21 @@ namespace AngelesPizza.Controllers
             modifier.ExtraCost = model.ExtraCost;
             modifier.IsActive = model.IsActive;
 
+            var relations = await _context.ProductModifierProducts
+                .Where(x => x.ProductModifierId == modifier.Id)
+                .ToListAsync();
+
+            _context.ProductModifierProducts.RemoveRange(relations);
+
+            foreach (var productId in model.ProductIds)
+            {
+                _context.ProductModifierProducts.Add(new ProductModifierProduct
+                {
+                    ProductId = productId,
+                    ProductModifierId = modifier.Id
+                });
+            }
+
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Modificador actualizado correctamente.";
@@ -119,12 +151,10 @@ namespace AngelesPizza.Controllers
         //==========================================
         private async Task LoadProducts()
         {
-            var products = await _context.Products
+            ViewBag.Products = await _context.Products
                 .Where(x => x.IsAvailable)
                 .OrderBy(x => x.Name)
                 .ToListAsync();
-
-            ViewBag.Products = new SelectList(products, "Id", "Name");
         }
     }
 }
