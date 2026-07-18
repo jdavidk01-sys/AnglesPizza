@@ -19,7 +19,7 @@ namespace AngelesPizza.Models
         public OrderType OrderType { get; set; }
 
         [Display(Name = "Estado")]
-        public OrderStatus Status { get; set; } = OrderStatus.Created;
+        public OrderStatus Status { get; set; } = OrderStatus.Creado;
 
         [Display(Name = "Cliente")]
         public int? CustomerId { get; set; }

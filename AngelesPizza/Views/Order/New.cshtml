@@ -87,7 +87,7 @@
                             <!-- Fila de Botones -->
                             <div class="row g-2">
                                 <div class="col">
-                                    <button id="btnUpdateCustomer" class="btn btn-sm btn-warning w-100">
+                                    <button id="btnUpdateCustomer" class="btn btn-sm btn-success w-100">
                                         Guardar Cambios
                                     </button>
                                 </div>
@@ -111,7 +111,7 @@
                         {
                             <div class="col-md-4">
 
-                                <button type="button" class="btn btn-outline-dark w-100 category-btn" data-id="@category.Id">
+                                <button type="button" class="btn btn-secondary w-100 category-btn" data-id="@category.Id">
                                     @category.Name
                                 </button>
 
@@ -163,7 +163,7 @@
 
                     </h5>
 
-                    <button id="btnConfirmOrder" class="btn btn-danger w-100">
+                    <button id="btnConfirmOrder" class="btn btn-success w-100">
                         Confirmar Pedido
                     </button>
 
@@ -214,7 +214,7 @@
 
                 <hr />
 
-                <h6>Modificadores</h6>
+                <h6>Adicionales</h6>
 
                 <div id="modifierList">
 
@@ -372,7 +372,7 @@
                         html += `
                             <div class="col-md-3">
 
-                                <button class="btn btn-outline-dark w-100 product-btn"
+                                <button class="btn btn-outline-secondary w-100 product-btn"
                                         data-id="${p.id}"
                                         data-name="${p.name}">
 

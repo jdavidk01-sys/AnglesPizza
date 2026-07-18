@@ -4,6 +4,10 @@
     ViewData["Title"] = "Pedidos Activos";
 }
 
+@{
+    Func<AngelesPizza.Enums.OrderStatus, string> getStatusClass = ViewBag.StatusClass;
+}
+
 <div class="container-fluid">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -11,7 +15,7 @@
         <h2>Pedidos Activos</h2>
 
         <div class="d-flex ms-auto align-items-center gap-2">
-            <span class="badge bg-secondary fs-6">
+            <span class="badge bg-primary fs-6">
                 @Model.Count() Pedidos
             </span>
 
@@ -57,7 +61,7 @@
                                     Pedido #@order.OrderNumber
                                 </strong>
 
-                                <span class="badge bg-secondary">
+                                <span class="badge @getStatusClass(order.Status) fs-6">
                                     @order.Status
                                 </span>
 
@@ -141,44 +145,44 @@
 
                                 </a>
 
-                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Created)
+                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Creado)
                                 {
                                     <button class="btn btn-outline-warning btnStatus w-50"
                                             data-id="@order.Id"
-                                            data-status="Queued">
+                                            data-status="Fila">
 
                                         Confirmar Pedido
 
                                     </button>
                                 }
 
-                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Queued)
+                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Fila)
                                 {
-                                    <button class="btn btn-warning text-white btnStatus w-50"
+                                    <button class="btn btn-warning btnStatus w-50"
                                             data-id="@order.Id"
-                                            data-status="Preparing">
+                                            data-status="Preparando">
 
                                         Preparar
 
                                     </button>
                                 }
 
-                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Preparing)
+                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Preparando)
                                 {
-                                    <button class="btn btn-warning text-white btnStatus w-50"
+                                    <button class="btn btn-success btnStatus w-50"
                                             data-id="@order.Id"
-                                            data-status="Ready">
+                                            data-status="Listo">
 
                                         Marcar como Listo
 
                                     </button>
                                 }
 
-                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Ready)
+                                @if (order.Status == AngelesPizza.Enums.OrderStatus.Listo)
                                 {
-                                    <button class="btn btn-dark btnStatus w-50"
+                                    <button class="btn btn-primary btnStatus w-50"
                                             data-id="@order.Id"
-                                            data-status="Delivered">
+                                            data-status="Entregado">
 
                                         Entregar
 

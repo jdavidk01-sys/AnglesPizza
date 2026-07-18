@@ -1,9 +1,15 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AngelesPizza</title>
+    <script>
+            (function() {
+                const theme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            })();
+    </script>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -24,11 +30,17 @@
     padding-top: 75px;
     }
 
+    #themeToggle:focus,
+    #themeToggle:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
 </style>
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-body-tertiary border-bottom box-shadow mb-3 fixed-top">
             <div class="container-fluid">
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -38,13 +50,18 @@
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-center">
 
+                    <img src="~/images/logo.png"
+                         asp-append-version="true"
+                         style="height:40px;"
+                         class="me-2" />
+
                     <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AngelesPizza</a>
 
                     <ul class="navbar-nav">
 
                         <li class="nav-item">
 
-                            <a class="nav-link text-dark"
+                            <a class="nav-link text-body"
                                asp-controller="Home"
                                asp-action="Index">
 
@@ -59,7 +76,7 @@
 
                         <li class="nav-item dropdown">
 
-                            <a class="nav-link dropdown-toggle text-dark"
+                            <a class="nav-link dropdown-toggle text-body"
                                href="#"
                                data-bs-toggle="dropdown">
 
@@ -101,7 +118,7 @@
 
                         <li class="nav-item dropdown">
 
-                            <a class="nav-link dropdown-toggle text-dark"
+                            <a class="nav-link dropdown-toggle text-body"
                                href="#"
                                data-bs-toggle="dropdown">
 
@@ -136,7 +153,7 @@
                                        asp-controller="ProductModifier"
                                        asp-action="Index">
 
-                                        Modificadores
+                                        Adicionales
 
                                     </a>
                                 </li>
@@ -159,7 +176,7 @@
 
                         <li class="nav-item dropdown">
 
-                            <a class="nav-link dropdown-toggle text-dark"
+                            <a class="nav-link dropdown-toggle text-body"
                                href="#"
                                data-bs-toggle="dropdown">
 
@@ -199,7 +216,7 @@
 
                         <li class="nav-item dropdown">
 
-                            <a class="nav-link dropdown-toggle text-dark"
+                            <a class="nav-link dropdown-toggle text-body"
                                href="#"
                                data-bs-toggle="dropdown">
 
@@ -245,11 +262,21 @@
                             </ul>
 
                         </li>
+
                     </ul>
+
+                    <button id="themeToggle" class="btn p-0 border-0 bg-transparent">
+                        <i id="themeIcon" class="bi bi-moon-stars fs-5"></i>
+                    </button>
+
                 </div>
+
             </div>
+
         </nav>
+
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -271,6 +298,37 @@
     <script src="https://cdn.datatables.net/responsive/3.0.7/js/dataTables.responsive.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.7/js/responsive.bootstrap5.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+    <script>
+            document.addEventListener('DOMContentLoaded', () => {
+
+                const html = document.documentElement;
+                const btn = document.getElementById('themeToggle');
+
+                updateButton(html.getAttribute('data-bs-theme') || 'light');
+
+                btn.addEventListener('click', () => {
+
+                    const newTheme =
+                        html.getAttribute('data-bs-theme') === 'dark'
+                            ? 'light'
+                            : 'dark';
+
+                    html.setAttribute('data-bs-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+
+                    updateButton(newTheme);
+                    btn.blur();
+                });
+
+                function updateButton(theme) {
+                    document.getElementById('themeIcon').className =
+                        theme === 'dark'
+                            ? 'bi bi-sun fs-5'
+                            : 'bi bi-moon-stars fs-5';
+                }
+            });
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<AngelesPizza.Models.ProductModifier>?
 
 @{
-    ViewData["Title"] = "Modificadores";
+    ViewData["Title"] = "Adicionales";
 }
 
 <div class="container-fluid">
 
     <h2 class="mb-4">
-        Modificadores
+        Adicionales
     </h2>
 
     <div class="card shadow-sm mb-4">
@@ -57,10 +57,10 @@
                         </button>
 
                         <a asp-action="Create"
-                           class="btn btn-secondary">
+                           class="btn btn-success">
 
                             <i class="bi bi-plus-circle"></i>
-                            Nuevo Modificador
+                            Nuevo Adicional
 
                         </a>
 
@@ -80,7 +80,7 @@
 
             <i class="bi bi-info-circle"></i>
 
-            Realice una búsqueda o presione <strong>Ver Todas</strong> para consultar los modificadores.
+            Realice una búsqueda o presione <strong>Ver Todas</strong> para consultar los Adicionales.
 
         </div>
     }
@@ -90,7 +90,7 @@
 
             <i class="bi bi-exclamation-circle"></i>
 
-            No se encontraron modificadores con los criterios indicados.
+            No se encontraron Adicionales con los criterios indicados.
 
         </div>
     }
@@ -112,7 +112,7 @@
                         <thead class="table-light">
 
                             <tr>
-                                <th>Modificador</th>
+                                <th>Adicional</th>
                                 <th class="text-end">Costo Adicional</th>
                                 <th class="text-center">Activo</th>
                                 <th class="text-center">Acciones</th>

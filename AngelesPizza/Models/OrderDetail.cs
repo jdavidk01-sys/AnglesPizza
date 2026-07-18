@@ -25,7 +25,7 @@ namespace AngelesPizza.Models
         public int Price { get; set; }
 
         [Display(Name = "Estado")]
-        public OrderStatus Status { get; set; } = OrderStatus.Queued;
+        public OrderStatus Status { get; set; } = OrderStatus.Fila;
 
         [StringLength(500)]
         [Display(Name = "Observaciones")]

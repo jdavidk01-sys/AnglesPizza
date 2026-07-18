@@ -28,8 +28,8 @@ namespace AngelesPizza.Controllers
                     .ThenInclude(d => d.OrderDetailModifiers)
                         .ThenInclude(m => m.ProductModifier)
                 .Where(o =>
-                    o.Status != OrderStatus.Delivered &&
-                    o.Status != OrderStatus.Cancelled)
+                    o.Status != OrderStatus.Entregado &&
+                    o.Status != OrderStatus.Cancelado)
                 .OrderBy(o => o.CreatedAt)
                 .ToListAsync();
 
@@ -42,10 +42,10 @@ namespace AngelesPizza.Controllers
         {
             return status switch
             {
-                OrderStatus.Created => "bg-secondary",
-                OrderStatus.Queued => "bg-warning text-dark",
-                OrderStatus.Preparing => "bg-primary",
-                OrderStatus.Ready => "bg-success",
+                OrderStatus.Creado => "bg-secondary",
+                OrderStatus.Fila => "bg-warning text-dark",
+                OrderStatus.Preparando => "bg-primary",
+                OrderStatus.Listo => "bg-success",
                 _ => "bg-dark"
             };
         }
@@ -122,12 +122,12 @@ namespace AngelesPizza.Controllers
             if (order == null)
                 return Json(new { ok = false });
 
-            order.Status = OrderStatus.Cancelled;
+            order.Status = OrderStatus.Cancelado;
 
             _context.OrderStatusHistories.Add(new OrderStatusHistory
             {
                 OrderId = order.Id,
-                Status = OrderStatus.Cancelled,
+                Status = OrderStatus.Cancelado,
                 CreatedAt = DateTime.UtcNow,
                 Notes = "Pedido cancelado."
             });
@@ -195,7 +195,7 @@ namespace AngelesPizza.Controllers
                 OrderId = order.Id,
                 ProductId = product.Id,
                 Price = product.Price,
-                Status = OrderStatus.Queued,
+                Status = OrderStatus.Fila,
                 Notes = notes
             };
 

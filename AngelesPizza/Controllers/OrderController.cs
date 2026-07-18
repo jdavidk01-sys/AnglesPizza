@@ -212,7 +212,7 @@ public class OrderController : Controller
             OrderType = orderType,
             CustomerId = customerId,
             RestaurantTableId = restaurantTableId,
-            Status = OrderStatus.Created
+            Status = OrderStatus.Creado
         };
 
         _context.Orders.Add(order);
@@ -226,7 +226,7 @@ public class OrderController : Controller
                 OrderId = order.Id,
                 ProductId = item.ProductId,
                 Price = item.Price,
-                Status = OrderStatus.Queued,
+                Status = OrderStatus.Fila,
                 Notes = item.Notes
             };
 
@@ -314,12 +314,12 @@ public class OrderController : Controller
 
         _context.Payments.Add(payment);
 
-        order.Status = OrderStatus.Queued;
+        order.Status = OrderStatus.Fila;
 
         _context.OrderStatusHistories.Add(new OrderStatusHistory
         {
             OrderId = order.Id,
-            Status = OrderStatus.Queued,
+            Status = OrderStatus.Fila,
             Notes = "Pago recibido."
         });
 
