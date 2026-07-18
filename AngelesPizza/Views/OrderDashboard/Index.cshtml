@@ -74,7 +74,7 @@
                                 <br />
 
                                 <strong class="order-time"
-                                      data-created="@order.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ")">
+                                      data-created="@DateTime.SpecifyKind(order.CreatedAt, DateTimeKind.Utc).ToString("yyyy-MM-ddTHH:mm:ssZ")">
                                 </strong>
 
                             </small>

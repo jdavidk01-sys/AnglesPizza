@@ -82,7 +82,7 @@
 
     <p>
         @TimeZoneInfo.ConvertTimeFromUtc(
-            Model.CreatedAt,
+            DateTime.SpecifyKind(Model.CreatedAt, DateTimeKind.Utc),
             TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time")
         ).ToString("dd/MM/yyyy HH:mm")
     </p>
