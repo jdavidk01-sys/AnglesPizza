@@ -19,27 +19,20 @@ namespace AngelesPizza.Controllers
         {
             try
             {
-                await _context.Database.OpenConnectionAsync();
-
-                using var command = _context.Database.GetDbConnection().CreateCommand();
-                command.CommandText = "SELECT 1";
-
-                var result = await command.ExecuteScalarAsync();
-
-                await _context.Database.CloseConnectionAsync();
+                await _context.Products
+                    .AsNoTracking()
+                    .Select(x => x.Id)
+                    .FirstOrDefaultAsync();
 
                 return Ok(new
                 {
                     ok = true,
-                    result
+                    time = DateTime.UtcNow
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                return StatusCode(500, new
-                {
-                    ok = false
-                });
+                return StatusCode(500, ex.Message);
             }
         }
     }
