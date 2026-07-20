@@ -265,9 +265,50 @@
 
                     </ul>
 
-                    <button id="themeToggle" class="btn p-0 border-0 bg-transparent">
-                        <i id="themeIcon" class="bi bi-moon-stars fs-5"></i>
-                    </button>
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="vr align-self-stretch my-2"></div>
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <span class="text-body">
+
+                                <i class="bi bi-person-fill"></i>
+
+                                @User.Identity.Name
+
+                            </span>
+
+                            <form asp-controller="Account"
+                                  asp-action="Logout"
+                                  method="post"
+                                  class="m-0">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn btn-link text-decoration-none p-0">
+
+                                    <i class="bi bi-box-arrow-right"></i>
+
+                                    Salir
+
+                                </button>
+
+                            </form>
+                        }
+
+                        <div class="vr align-self-stretch my-2"></div>
+
+                        <button id="themeToggle"
+                                class="btn p-0 border-0 bg-transparent">
+
+                            <i id="themeIcon"
+                               class="bi bi-moon-stars fs-5"></i>
+
+                        </button>
+
+                    </div>
 
                 </div>
 
