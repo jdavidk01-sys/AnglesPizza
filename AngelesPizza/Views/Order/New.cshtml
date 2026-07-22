@@ -428,7 +428,7 @@ $(document).on("click", ".product-btn", function () {
                     <label class="form-check-label">
 
                         ${m.name}
-                        +$${m.extraCost.toLocaleString()}
+                        ${m.extraCost > 0 ? `+$${m.extraCost.toLocaleString()}` : ''}
 
                     </label>
 

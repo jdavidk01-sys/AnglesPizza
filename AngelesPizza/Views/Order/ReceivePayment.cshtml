@@ -46,7 +46,7 @@
                                         @foreach (var modifier in item.OrderDetailModifiers)
                                         {
                                             <div>
-                                                + @modifier.ProductModifier.Name
+                                                @modifier.ProductModifier.Name @(modifier.ProductModifier.ExtraCost > 0 ? $" (+${modifier.ProductModifier.ExtraCost:N0})" : "")
                                             </div>
                                         }
 

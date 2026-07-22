@@ -65,10 +65,15 @@ public class OrderController : Controller
             "Id",
             "Name");
 
+        var activeTables = _context.RestaurantTables
+            .Where(x => x.IsActive)
+            .ToList(); 
+
         ViewBag.Tables = new SelectList(
-            _context.RestaurantTables
-                .Where(x => x.IsActive)
-                .OrderBy(x => x.Name),
+            activeTables
+                .OrderBy(x => int.TryParse(x.Name, out int num) ? num : 9999)
+                .ThenBy(x => x.Name) 
+                .ToList(),
             "Id",
             "Name");
 
