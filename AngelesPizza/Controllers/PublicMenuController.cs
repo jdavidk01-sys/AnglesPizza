@@ -19,7 +19,6 @@ namespace AngelesPizza.Controllers
             var categories = await _context.Categories
                 .Include(c => c.Products)
                 .Where(c => c.IsActive)
-                .OrderBy(c => c.Name)
                 .ToListAsync();
 
             // Filtrar solo productos disponibles
@@ -34,6 +33,8 @@ namespace AngelesPizza.Controllers
             // Remover categorías sin productos disponibles
             var categoriesWithProducts = categories
                 .Where(c => c.Products.Any())
+                .OrderBy(c => c.Name.Equals("Bebidas", StringComparison.OrdinalIgnoreCase) ? 1 : 0)
+                .ThenBy(c => c.Name)
                 .ToList();
 
             return View(categoriesWithProducts);
