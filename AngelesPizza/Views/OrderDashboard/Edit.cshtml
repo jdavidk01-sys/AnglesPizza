@@ -1,4 +1,4 @@
-@model AngelesPizza.Models.Order
+﻿@model AngelesPizza.Models.Order
 
 @{
     ViewData["Title"] = "Editar Pedido";
@@ -465,7 +465,7 @@
                                    for="mod${modifier.id}">
 
                                 ${modifier.name}
-                                ${modifier.extraCost > 0 ? `(+$ ${modifier.extraCost.toLocaleString()})` : ''}
+                                (+$ ${modifier.extraCost.toLocaleString()})
 
                             </label>
 
