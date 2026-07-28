@@ -1,9 +1,11 @@
 using AngelesPizza.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AngelesPizza.Controllers
 {
+    [AllowAnonymous]
     public class PublicMenuController : Controller
     {
         private readonly ApplicationDbContext _context;
