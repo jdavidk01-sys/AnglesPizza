@@ -98,6 +98,14 @@
                         <strong>@Model.SubTotal.ToString("N0")</strong>
                     </div>
 
+                    @if (Model.OrderType == AngelesPizza.Enums.OrderType.Domicilio && Model.DeliveryCost > 0)
+                    {
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Domicilio</span>
+                            <strong>@Model.DeliveryCost.ToString("N0")</strong>
+                        </div>
+                    }
+
                     <div class="d-flex justify-content-between mb-2">
                         <span>IVA</span>
                         <strong>@Model.Tax.ToString("N0")</strong>

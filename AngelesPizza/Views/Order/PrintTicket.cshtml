@@ -132,6 +132,14 @@
             <td class="right">@Model.SubTotal.ToString("N0")</td>
         </tr>
 
+        @if (Model.OrderType == AngelesPizza.Enums.OrderType.Domicilio && Model.DeliveryCost > 0)
+        {
+            <tr>
+                <td>Domicilio</td>
+                <td class="right">@Model.DeliveryCost.ToString("N0")</td>
+            </tr>
+        }
+
         <tr>
             <td>IVA</td>
             <td class="right">@Model.Tax.ToString("N0")</td>

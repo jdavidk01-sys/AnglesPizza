@@ -42,6 +42,9 @@ namespace AngelesPizza.Models
         [Display(Name = "Total")]
         public int Total { get; set; }
 
+        [Display(Name = "Costo de Domicilio")]
+        public int DeliveryCost { get; set; }
+
         [StringLength(500)]
         [Display(Name = "Observaciones")]
         public string? Notes { get; set; }

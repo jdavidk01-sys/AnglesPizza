@@ -220,6 +220,8 @@
     <script>
 
         const orderId = @Model.Id;
+        const orderType = @((int)Model.OrderType);
+        const deliveryCost = @Model.DeliveryCost;
         let selectedProductId = 0;
 
         new TomSelect("#CustomerId", {
@@ -328,6 +330,28 @@
 
                 });
 
+                let subtotal = total;
+                let finalTotal = subtotal + deliveryCost;
+
+                html += `
+                    <hr>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal</span>
+                        <span>$ ${subtotal.toLocaleString()}</span>
+                    </div>
+                `;
+
+                // OrderType.Domicilio = 2
+                if (orderType === 2 && deliveryCost > 0) {
+                    html += `
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Domicilio</span>
+                            <span>$ ${deliveryCost.toLocaleString()}</span>
+                        </div>
+                    `;
+                }
+
                 html += `
                     <hr>
 
@@ -335,7 +359,7 @@
 
                         <strong>Total</strong>
 
-                        <strong>$ ${total.toLocaleString()}</strong>
+                        <strong>$ ${finalTotal.toLocaleString()}</strong>
 
                     </div>
                 `;

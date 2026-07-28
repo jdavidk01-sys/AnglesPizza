@@ -188,7 +188,7 @@ public class OrderController : Controller
 
     //Crear pedido
     [HttpPost]
-    public async Task<IActionResult> Confirm(OrderType orderType, int? customerId, int? restaurantTableId)
+    public async Task<IActionResult> Confirm(OrderType orderType, int? customerId, int? restaurantTableId, int deliveryCost = 0)
     {
         var tempOrder = HttpContext.Session
             .GetObject<List<TempOrderItem>>("ORDER");
@@ -212,7 +212,8 @@ public class OrderController : Controller
             OrderType = orderType,
             CustomerId = customerId,
             RestaurantTableId = restaurantTableId,
-            Status = OrderStatus.Creado
+            Status = OrderStatus.Creado,
+            DeliveryCost = deliveryCost
         };
 
         _context.Orders.Add(order);
@@ -253,7 +254,7 @@ public class OrderController : Controller
         // Por ahora sin IVA
         order.Tax = 0;
 
-        order.Total = order.SubTotal + order.Tax;
+        order.Total = order.SubTotal + order.Tax + order.DeliveryCost;
 
         await _context.SaveChangesAsync();
 
