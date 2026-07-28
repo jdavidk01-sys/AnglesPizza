@@ -4,6 +4,7 @@ using AngelesPizza.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AngelesPizza.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260720012022_AddIdentity")]
+    partial class AddIdentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,9 +171,6 @@ namespace AngelesPizza.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DeliveryCost")
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
@@ -675,13 +675,13 @@ namespace AngelesPizza.Migrations
             modelBuilder.Entity("AngelesPizza.Models.ProductModifierProduct", b =>
                 {
                     b.HasOne("AngelesPizza.Models.Product", "Product")
-                        .WithMany("ProductModifierProducts")
+                        .WithMany("ProductModifiers")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AngelesPizza.Models.ProductModifier", "ProductModifier")
-                        .WithMany("ProductModifierProducts")
+                        .WithMany("Products")
                         .HasForeignKey("ProductModifierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -770,14 +770,14 @@ namespace AngelesPizza.Migrations
                 {
                     b.Navigation("OrderDetails");
 
-                    b.Navigation("ProductModifierProducts");
+                    b.Navigation("ProductModifiers");
                 });
 
             modelBuilder.Entity("AngelesPizza.Models.ProductModifier", b =>
                 {
                     b.Navigation("OrderDetailModifiers");
 
-                    b.Navigation("ProductModifierProducts");
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("AngelesPizza.Models.RestaurantTable", b =>

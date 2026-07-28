@@ -1,0 +1,131 @@
+﻿@model AngelesPizza.ViewModels.User.EditUserViewModel
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="container">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Editar Usuario</h2>
+
+        <a asp-action="Index"
+           class="btn btn-secondary">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Volver
+
+        </a>
+
+    </div>
+
+    <hr />
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <form asp-action="Edit" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input asp-for="Id" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="alert alert-danger">
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="FullName" class="form-label"></label>
+
+                        <input asp-for="FullName"
+                               class="form-control" />
+
+                        <span asp-validation-for="FullName"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="UserName"
+                               class="form-label"></label>
+
+                        <input asp-for="UserName"
+                               class="form-control" />
+
+                        <span asp-validation-for="UserName"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="Role"
+                               class="form-label"></label>
+
+                        <select asp-for="Role"
+                                asp-items="ViewBag.Roles"
+                                class="form-select">
+
+                            <option value="">Seleccione...</option>
+
+                        </select>
+
+                        <span asp-validation-for="Role"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-6 d-flex align-items-center">
+
+                        <div class="form-check mt-4">
+
+                            <input asp-for="IsActive"
+                                   class="form-check-input" />
+
+                            <label asp-for="IsActive"
+                                   class="form-check-label">
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <button type="submit"
+                        class="btn btn-primary">
+
+                    <i class="bi bi-floppy"></i>
+
+                    Guardar Cambios
+
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-secondary">
+
+                    Cancelar
+
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}
