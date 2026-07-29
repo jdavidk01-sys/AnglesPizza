@@ -32,10 +32,11 @@ namespace AngelesPizza.Controllers
                     .ToList();
             }
 
-            // Remover categorías sin productos disponibles
+            // Remover categorías sin productos disponibles y ordenar: Entradas primero, Bebidas último, resto alfabético
             var categoriesWithProducts = categories
                 .Where(c => c.Products.Any())
-                .OrderBy(c => c.Name.Equals("Bebidas", StringComparison.OrdinalIgnoreCase) ? 1 : 0)
+                .OrderBy(c => c.Name.Equals("Entradas", StringComparison.OrdinalIgnoreCase) ? 0 : 
+                             c.Name.Equals("Bebidas", StringComparison.OrdinalIgnoreCase) ? 2 : 1)
                 .ThenBy(c => c.Name)
                 .ToList();
 
