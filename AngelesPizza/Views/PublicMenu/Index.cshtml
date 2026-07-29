@@ -24,6 +24,7 @@
             background-attachment: fixed;
             background-repeat: no-repeat;
             min-height: 100vh;
+            min-height: 100dvh;
             padding: 20px 10px;
             position: relative;
         }
@@ -38,6 +39,14 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.4);
             z-index: -1;
+        }
+
+        /* Fix iOS Safari: background-attachment: fixed no renderiza bien */
+        @@supports (-webkit-touch-callout: none) {
+            body {
+                background-attachment: scroll;
+                background-position: center top;
+            }
         }
 
         .menu-container {
@@ -358,7 +367,7 @@
                     <div class="row g-4">
                         @foreach (var product in category.Products)
                         {
-                            <div class="col-md-6 col-lg-4">
+                            <div class="col-6 col-md-6 col-lg-4">
                                 <div class="product-card" 
                                      data-product-id="@product.Id"
                                      data-product-name="@product.Name"
