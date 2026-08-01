@@ -315,8 +315,9 @@
             }
 
             .menu-container {
-                max-width: 90%;
-                width: 90%;
+                max-width: 95%;
+                width: 95%;
+                padding: 0 5px;
             }
 
             .header h1 {
@@ -325,35 +326,123 @@
 
             .category-section {
                 background: linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(254, 243, 199, 0.75) 100%);
-                padding: 20px 15px;
+                padding: 15px 8px;
+                margin-bottom: 15px;
+            }
+
+            .category-header {
+                padding: 12px 15px;
             }
 
             .category-title {
-                font-size: 1.3rem;
+                font-size: 1.1rem;
             }
 
-            .product-name {
-                font-size: 1rem;
+            .category-content {
+                padding: 0 10px;
             }
 
-            .product-image {
-                height: 150px;
+            .category-content.expanded {
+                padding: 15px 10px 20px 10px;
+            }
+
+            .row.g-4 {
+                --bs-gutter-x: 0.5rem;
+                --bs-gutter-y: 0.5rem;
             }
 
             .product-card {
                 background: rgba(255, 255, 255, 0.95);
+                padding: 10px;
+            }
+
+            .product-name {
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+
+            .product-image {
+                height: 120px;
+                margin-bottom: 10px;
+            }
+
+            .product-description {
+                font-size: 0.75rem;
+                margin-bottom: 10px;
+                min-height: 40px;
+            }
+
+            .product-price {
+                font-size: 0.95rem;
+            }
+
+            .click-hint {
+                font-size: 0.75rem;
+                margin-top: 8px;
+            }
+
+            .category-hint {
+                font-size: 0.85rem;
+                margin-bottom: 15px;
+            }
+
+            /* Modal ajustes para móviles */
+            .modal-header {
+                padding: 15px;
+            }
+
+            .modal-title {
+                font-size: 0.9rem;
+            }
+
+            .modal-body {
+                padding: 20px 15px;
+            }
+
+            .modal-body h5 {
+                font-size: 1rem;
+            }
+
+            .modal-body .d-flex {
+                font-size: 0.9rem;
+            }
+
+            .modal-body .d-flex span:first-child {
+                font-size: 1rem !important;
+            }
+
+            .modal-body .d-flex #modalProductPrice {
+                font-size: 1.2rem !important;
+            }
+
+            .modifier-item {
+                padding: 10px;
+                margin-bottom: 8px;
+            }
+
+            .modifier-name {
+                font-size: 0.75rem;
+            }
+
+            .modifier-price {
+                font-size: 0.85rem;
             }
         }
 
         /* Móviles pequeños */
         @@media (max-width: 480px) {
             .menu-container {
-                max-width: 92%;
-                width: 92%;
+                max-width: 98%;
+                width: 98%;
+                padding: 0 3px;
             }
 
             .header {
                 padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 1.7rem;
             }
 
             .header-logo {
@@ -363,6 +452,39 @@
             }
 
             .category-section {
+                padding: 12px 5px;
+            }
+
+            .category-header {
+                padding: 10px 12px;
+            }
+
+            .category-title {
+                font-size: 1rem;
+            }
+
+            .product-card {
+                padding: 8px;
+            }
+
+            .product-image {
+                height: 100px;
+            }
+
+            .product-name {
+                font-size: 0.85rem;
+            }
+
+            .product-description {
+                font-size: 0.7rem;
+                min-height: 35px;
+            }
+
+            .modal-title {
+                font-size: 0.85rem;
+            }
+
+            .modal-body {
                 padding: 15px 10px;
             }
         }
