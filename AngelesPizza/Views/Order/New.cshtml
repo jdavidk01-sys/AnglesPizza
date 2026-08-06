@@ -185,6 +185,7 @@
 
 </div>
 
+<!-- MODAL ADICIONALES/SABORES-->
 <div class="modal fade" id="productModal" tabindex="-1">
 
     <div class="modal-dialog modal-lg">
@@ -193,9 +194,10 @@
 
             <div class="modal-header">
 
-                <h5 class="modal-title" id="productName">
+
+                <h4 class="modal-title fw-bold" id="productName">
                     Producto
-                </h5>
+                </h4>
 
                 <button type="button"
                         class="btn-close"
@@ -210,7 +212,7 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
+                    <label class="form-label fw-bold fs-5">
                         Observaciones
                     </label>
 
@@ -222,7 +224,7 @@
 
                 <hr />
 
-                <h6>Adicionales o sabores</h6>
+                <h5><strong>Adicionales o sabores</strong></h5>
 
                 <div id="modifierList">
 
@@ -261,7 +263,7 @@
 </div>
 
 
-
+<!-- MODAL CLIENTE -->
 <div class="modal fade" id="customerModal" tabindex="-1">
 
     <div class="modal-dialog">
@@ -433,7 +435,7 @@ $(document).on("click", ".product-btn", function () {
                            value="${m.id}"
                            data-cost="${m.extraCost}">
 
-                    <label class="form-check-label">
+                    <label class="form-check-label fs-5">
 
                         ${m.name}
                         ${m.extraCost > 0 ? `+$${m.extraCost.toLocaleString()}` : ''}
@@ -447,7 +449,7 @@ $(document).on("click", ".product-btn", function () {
 
             html = `
                 <div class="text-muted">
-                    Este producto no tiene modificadores.
+                    Este producto no tiene sabores o adicionales.
                 </div>`;
         }
 
