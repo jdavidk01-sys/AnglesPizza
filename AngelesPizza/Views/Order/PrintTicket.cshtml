@@ -46,8 +46,10 @@
 
             @@media print {
 
-                body {
+                html, body {
                     width: auto;
+                    height: auto;
+                    min-height: 0;
                     margin: 0;
                     padding: 0;
                     box-shadow: none;
@@ -55,7 +57,7 @@
 
                 @@page {
                     size: 80mm auto;
-                    margin: 3mm;
+                    margin: 0;
                 }
             }
 
