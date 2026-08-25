@@ -2,6 +2,18 @@
     ViewData["Title"] = "Nuevo Pedido";
 }
 
+<style>
+    #Quantity::-webkit-inner-spin-button,
+    #Quantity::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    #Quantity {
+        -moz-appearance: textfield;
+    }
+</style>
+
 <div class="container-fluid">
 
     <h2 class="mb-4">
@@ -212,6 +224,37 @@
 
                 <div class="mb-3">
 
+                    <div class="mb-4">
+
+                        <label class="form-label fw-bold fs-5">
+                            Cantidad
+                        </label>
+
+                        <div class="input-group" style="max-width: 150px;">
+
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    id="btnDecreaseQuantity">
+                                −
+                            </button>
+
+                            <input type="number"
+                                   id="Quantity"
+                                   class="form-control text-center fw-bold fs-6"
+                                   value="1"
+                                   min="1"
+                                   max="99" />
+
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    id="btnIncreaseQuantity">
+                                +
+                            </button>
+
+                        </div>
+
+                    </div>
+
                     <label class="form-label fw-bold fs-5">
                         Observaciones
                     </label>
@@ -415,6 +458,8 @@ $(document).on("click", ".product-btn", function () {
 
     $("#productName").text($(this).data("name"));
 
+    $("#Quantity").val(1);
+
     $("#Notes").val("");
 
     $.get("/Order/GetModifiers",
@@ -470,9 +515,12 @@ $(document).on("click", ".product-btn", function () {
                 modifierIds.push($(this).val());
             });
 
+            let quantity = parseInt($("#Quantity").val()) || 1;
+
             $.post("/Order/AddProduct", {
 
                 productId: $("#ProductId").val(),
+                quantity: quantity,
                 notes: $("#Notes").val(),
                 modifierIds: modifierIds
 
@@ -506,7 +554,7 @@ $(document).on("click", ".product-btn", function () {
 
                                 <div class="d-flex justify-content-between">
 
-                                    <strong>${item.productName}</strong>
+                                    <strong>${item.productName} x ${item.quantity} unds.</strong>
 
                                     <button class="btn btn-sm btn-outline-danger remove-item"
                                             data-index="${index}">
@@ -772,6 +820,43 @@ $("#btnConfirmOrder").click(function () {
                     .hide();
 
             });
+
+        });
+
+        $("#btnIncreaseQuantity").click(function () {
+
+            let quantity = parseInt($("#Quantity").val()) || 1;
+
+            if (quantity < 99) {
+                quantity++;
+                $("#Quantity").val(quantity);
+            }
+
+        });
+
+
+        $("#btnDecreaseQuantity").click(function () {
+
+            let quantity = parseInt($("#Quantity").val()) || 1;
+
+            if (quantity > 1) {
+                quantity--;
+                $("#Quantity").val(quantity);
+            }
+
+        });
+
+        $("#Quantity").on("change", function () {
+
+            let quantity = parseInt($(this).val()) || 1;
+
+            if (quantity < 1)
+                quantity = 1;
+
+            if (quantity > 199)
+                quantity = 199;
+
+            $(this).val(quantity);
 
         });
 

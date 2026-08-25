@@ -3,7 +3,7 @@
     public enum PaymentType
     {
         Efectivo = 1,
-        Trasnserencia = 2,
+        Transferencia = 2,
         Tarjeta = 3
     }
 }

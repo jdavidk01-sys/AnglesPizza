@@ -26,7 +26,8 @@
                             <tr>
                                 <th>Producto</th>
                                 <th>Adicional/Sabor</th>
-                                <th class="text-end">Valor</th>
+                                <th class="text-end">Valor unitario</th>
+                                <th class="text-end">Total</th>
                             </tr>
 
                         </thead>
@@ -35,10 +36,14 @@
 
                             @foreach (var item in Model.OrderDetails)
                             {
+                                var unitPrice = item.Price + item.OrderDetailModifiers.Sum(x => x.ExtraCost);
+                                var total = unitPrice * item.Quantity;
+
                                 <tr>
 
                                     <td>
                                         @item.Product.Name
+                                        <strong>x @item.Quantity unds.</strong>
                                     </td>
 
                                     <td>
@@ -46,7 +51,10 @@
                                         @foreach (var modifier in item.OrderDetailModifiers)
                                         {
                                             <div>
-                                                @modifier.ProductModifier.Name @(modifier.ProductModifier.ExtraCost > 0 ? $" (+${modifier.ProductModifier.ExtraCost:N0})" : "")
+                                                @modifier.ProductModifier.Name
+                                                @(modifier.ProductModifier.ExtraCost > 0
+                                                    ? $" (+${modifier.ProductModifier.ExtraCost:N0})"
+                                                    : "")
                                             </div>
                                         }
 
@@ -60,13 +68,11 @@
                                     </td>
 
                                     <td class="text-end">
+                                        @unitPrice.ToString("N0")
+                                    </td>
 
-                                        @{
-                                            var total = item.Price + item.OrderDetailModifiers.Sum(x => x.ExtraCost);
-                                        }
-
+                                    <td class="text-end">
                                         @total.ToString("N0")
-
                                     </td>
 
                                 </tr>

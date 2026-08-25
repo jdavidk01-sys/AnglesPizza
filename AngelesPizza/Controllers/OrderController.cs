@@ -122,9 +122,14 @@ public class OrderController : Controller
     [HttpPost]
     public async Task<IActionResult> AddProduct(
         int productId,
+        int quantity,
         string? notes,
         List<int> modifierIds)
     {
+
+        if (quantity < 1)
+            quantity = 1;
+
         var product = await _context.Products
             .FirstOrDefaultAsync(p => p.Id == productId);
 
@@ -146,6 +151,7 @@ public class OrderController : Controller
             ProductId = product.Id,
             ProductName = product.Name,
             Price = product.Price,
+            Quantity = quantity,
             Notes = notes,
             ModifierIds = modifiers.Select(x => x.Id).ToList(),
             ModifierNames = modifiers.Select(x => x.Name).ToList(),
@@ -231,6 +237,7 @@ public class OrderController : Controller
             {
                 OrderId = order.Id,
                 ProductId = item.ProductId,
+                Quantity = item.Quantity,
                 Price = item.Price,
                 Status = OrderStatus.Fila,
                 Notes = item.Notes

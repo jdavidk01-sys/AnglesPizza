@@ -149,14 +149,18 @@
 
     @foreach (var item in Model.OrderDetails)
     {
-        var total = item.Price + item.OrderDetailModifiers.Sum(x => x.ExtraCost);
+        var unitPrice = item.Price + item.OrderDetailModifiers.Sum(x => x.ExtraCost);
+        var total = unitPrice * item.Quantity;
 
-        <strong>@item.Product.Name</strong>
+        <strong>@item.Product.Name x @item.Quantity unds.</strong>
 
         @foreach (var modifier in item.OrderDetailModifiers)
         {
             <div class="small">
-                @modifier.ProductModifier.Name @(modifier.ProductModifier.ExtraCost > 0 ? $" (+${modifier.ProductModifier.ExtraCost:N0})" : "")
+                @modifier.ProductModifier.Name
+                @(modifier.ProductModifier.ExtraCost > 0
+                    ? $" (+${modifier.ProductModifier.ExtraCost:N0})"
+                    : "")
             </div>
         }
 
@@ -167,8 +171,18 @@
             </div>
         }
 
-        <div class="right">
-            @total.ToString("N0")
+        <div>
+            Precio unitario:
+            <span class="right">
+                $@unitPrice.ToString("N0")
+            </span>
+        </div>
+
+        <div>
+            Total:
+            <span class="right">
+                $@total.ToString("N0")
+            </span>
         </div>
 
         <br />

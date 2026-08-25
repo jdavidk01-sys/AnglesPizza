@@ -24,6 +24,9 @@ namespace AngelesPizza.Models
         [Display(Name = "Precio")]
         public int Price { get; set; }
 
+        [Display(Name = "Cantidad")]
+        public int Quantity { get; set; } = 1;
+
         [Display(Name = "Estado")]
         public OrderStatus Status { get; set; } = OrderStatus.Fila;
 
