@@ -663,40 +663,50 @@ $(document).on("click", ".product-btn", function () {
         });
 
 
-$("#btnConfirmOrder").click(function () {
+        $("#btnConfirmOrder").click(function () {
 
-    let btn = $(this);
+            let btn = $(this);
 
-    btn.prop("disabled", true);
+            btn.prop("disabled", true);
 
-    $.post("/Order/Confirm", {
+            $.post("/Order/Confirm", {
 
-        orderType: $("#OrderType").val(),
-        customerId: $("#CustomerId").val(),
-        restaurantTableId: $("#RestaurantTableId").val(),
-        deliveryCost: $("#DeliveryCost").val() || 0
+                orderType: $("#OrderType").val(),
+                customerId: $("#CustomerId").val(),
+                restaurantTableId: $("#RestaurantTableId").val(),
+                deliveryCost: $("#DeliveryCost").val() || 0
 
-    }, function (response) {
+            }, function (response) {
 
-        if (response.ok) {
+                if (response.ok) {
 
-            window.location.href = "/Order/ReceivePayment/" + response.orderId;
+                    window.location.href = "/Order/ReceivePayment/" + response.orderId;
 
-        }
-        else {
+                }
+                else {
 
-            btn.prop("disabled", false);
+                    btn.prop("disabled", false);
 
-            alert(response.message);
-        }
+                    alert(response.message);
+                }
 
-    });
+            });
 
-});
+        });
 
         new TomSelect("#CustomerId", {
-            create: false
-        });
+            create: false,
+
+            searchField: ["text"],
+
+            sortField: {
+                field: "text",
+                direction: "asc"
+            },
+
+            placeholder: "Buscar cliente por nombre o teléfono...",
+            allowEmptyOption: true
+        });;
 
         $("#OrderType").change(function () {
             let orderType = $(this).val();
@@ -757,7 +767,7 @@ $("#btnConfirmOrder").click(function () {
 
                 if (!response.ok) {
 
-                    alert("No fue posible actualizar el cliente.");
+                    alert(response.message || "No fue posible actualizar el cliente.");
                     return;
 
                 }
@@ -768,7 +778,7 @@ $("#btnConfirmOrder").click(function () {
 
         });
 
-                $("#btnNewCustomer").click(function () {
+        $("#btnNewCustomer").click(function () {
 
             $("#NewCustomerName").val("");
             $("#NewCustomerPhone").val("");
@@ -795,7 +805,7 @@ $("#btnConfirmOrder").click(function () {
 
                 if (!response.ok) {
 
-                    alert("No fue posible crear el cliente.");
+                    alert(response.message || "No fue posible crear el cliente.");
                     return;
 
                 }

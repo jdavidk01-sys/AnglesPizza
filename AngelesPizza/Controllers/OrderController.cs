@@ -57,13 +57,22 @@ public class OrderController : Controller
             .OrderBy(x => x.Name)
             .ToListAsync();
 
+        var customers = await _context.Customers
+            .Where(c => c.IsActive)
+            .OrderBy(c => c.Name)
+            .Select(c => new
+            {
+                c.Id,
+                Text = string.IsNullOrWhiteSpace(c.Phone)
+                    ? c.Name
+                    : $"{c.Name} - {c.Phone}"
+            })
+            .ToListAsync();
+
         ViewBag.Customers = new SelectList(
-            await _context.Customers
-                .Where(c => c.IsActive)
-                .OrderBy(c => c.Name)
-                .ToListAsync(),
+            customers,
             "Id",
-            "Name");
+            "Text");
 
         var activeTables = _context.RestaurantTables
             .Where(x => x.IsActive)

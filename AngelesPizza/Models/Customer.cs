@@ -12,7 +12,8 @@ namespace AngelesPizza.Models
         [Display(Name = "Nombre")]
         public string Name { get; set; } = string.Empty;
 
-        [StringLength(20)]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "El teléfono debe tener exactamente 10 dígitos.")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "El teléfono debe contener únicamente 10 dígitos.")]
         [Display(Name = "Teléfono")]
         public string? Phone { get; set; }
 

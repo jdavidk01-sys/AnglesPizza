@@ -45,7 +45,27 @@ namespace AngelesPizza.Controllers
         public async Task<IActionResult> Create(Customer model)
         {
             if (!ModelState.IsValid)
-                return Json(new { ok = false });
+                return Json(new
+                {
+                    ok = false,
+                    message = "El telefono ingresado no es válido."
+                });
+
+            // Validar teléfono duplicado
+            if (!string.IsNullOrWhiteSpace(model.Phone))
+            {
+                var phoneExists = await _context.Customers
+                    .AnyAsync(x => x.Phone == model.Phone);
+
+                if (phoneExists)
+                {
+                    return Json(new
+                    {
+                        ok = false,
+                        message = "Ya existe un cliente registrado con este número de teléfono."
+                    });
+                }
+            }
 
             _context.Customers.Add(model);
 
@@ -63,11 +83,40 @@ namespace AngelesPizza.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(Customer model)
         {
+            if (!ModelState.IsValid)
+                return Json(new
+                {
+                    ok = false,
+                    message = "El telefono ingresado no es válido."
+                });
+
             var customer = await _context.Customers
                 .FirstOrDefaultAsync(x => x.Id == model.Id);
 
             if (customer == null)
-                return Json(new { ok = false });
+                return Json(new
+                {
+                    ok = false,
+                    message = "El cliente no existe."
+                });
+
+            // Validar teléfono duplicado
+            if (!string.IsNullOrWhiteSpace(model.Phone))
+            {
+                var phoneExists = await _context.Customers
+                    .AnyAsync(x =>
+                        x.Phone == model.Phone &&
+                        x.Id != model.Id);
+
+                if (phoneExists)
+                {
+                    return Json(new
+                    {
+                        ok = false,
+                        message = "Ya existe otro cliente registrado con este número de teléfono."
+                    });
+                }
+            }
 
             customer.Name = model.Name;
             customer.Phone = model.Phone;
