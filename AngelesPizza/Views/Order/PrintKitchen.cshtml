@@ -135,6 +135,17 @@
                 @Model.Customer.Address
             </div>
         }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Customer.Reference))
+        {
+            <div class="section">
+                <strong>Referencia:</strong>
+
+                <br />
+
+                @Model.Customer.Reference
+            </div>
+        }
     }
 
     <hr />
@@ -149,8 +160,19 @@
 
             @foreach (var modifier in item.OrderDetailModifiers)
             {
+                var modifierName = modifier.ProductModifier.Name ?? "";
+                var parenthesisIndex = modifierName.IndexOf('(');
+
+                if (parenthesisIndex >= 0)
+                {
+                    modifierName = modifierName.Substring(0, parenthesisIndex).Trim();
+                }
+
                 <div class="small">
-                    @modifier.ProductModifier.Name @(modifier.ProductModifier.ExtraCost > 0 ? $" (+${modifier.ProductModifier.ExtraCost:N0})" : "")
+                    @modifierName
+                    @(modifier.ProductModifier.ExtraCost > 0
+                        ? $" (+${modifier.ProductModifier.ExtraCost:N0})"
+                        : "")
                 </div>
             }
 

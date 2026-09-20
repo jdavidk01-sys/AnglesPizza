@@ -43,7 +43,7 @@
 
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" id="tableContainer" style="display: none;">
 
                         <label class="form-label">Mesa</label>
 
@@ -66,6 +66,7 @@
                                name="DeliveryCost" 
                                class="form-control" 
                                min="0"
+                               step="50"
                                value="0" />
 
                     </div>
@@ -480,7 +481,7 @@ $(document).on("click", ".product-btn", function () {
                            value="${m.id}"
                            data-cost="${m.extraCost}">
 
-                    <label class="form-check-label fs-5">
+                    <label class="form-check-label fs-6">
 
                         ${m.name}
                         ${m.extraCost > 0 ? `+$${m.extraCost.toLocaleString()}` : ''}
@@ -709,17 +710,28 @@ $(document).on("click", ".product-btn", function () {
         });;
 
         $("#OrderType").change(function () {
+
             let orderType = $(this).val();
 
-            // OrderType.Domicilio = 2
+            $("#tableContainer").hide();
+            $("#deliveryCostContainer").hide();
+
+            $("#RestaurantTableId").val("");
+            $("#DeliveryCost").val(0);
+
+            // Domicilio = 2
             if (orderType === "2") {
+
                 $("#deliveryCostContainer").show();
-            } else {
-                $("#deliveryCostContainer").hide();
-                $("#DeliveryCost").val(0);
+
+            }
+            // Mesa
+            else if (orderType !== "") {
+
+                $("#tableContainer").show();
+
             }
 
-            // Actualizar el resumen cuando cambie el tipo
             loadOrder();
         });
 

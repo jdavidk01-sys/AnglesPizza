@@ -309,12 +309,125 @@ public class OrderController : Controller
     public async Task<IActionResult> Pay(
     int orderId,
     PaymentType paymentType,
-    int receivedAmount)
+    int receivedAmount,
+    string unitPrices)
     {
-        var order = await _context.Orders.FindAsync(orderId);
+        var order = await _context.Orders
+            .Include(o => o.OrderDetails)
+                .ThenInclude(d => d.OrderDetailModifiers)
+            .FirstOrDefaultAsync(o => o.Id == orderId);
 
         if (order == null)
-            return Json(new { ok = false });
+        {
+            return Json(new
+            {
+                ok = false,
+                message = "La orden no existe."
+            });
+        }
+
+        if (order.Status != OrderStatus.Creado)
+        {
+            return Json(new
+            {
+                ok = false,
+                message = "Esta orden ya fue procesada."
+            });
+        }
+
+        List<OrderDetailPriceDto>? prices;
+
+        try
+        {
+            prices = System.Text.Json.JsonSerializer
+                .Deserialize<List<OrderDetailPriceDto>>(
+                    unitPrices,
+                    new System.Text.Json.JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return Json(new
+            {
+                ok = false,
+                message = "Los precios enviados no tienen un formato válido."
+            });
+        }
+
+        if (prices == null)
+        {
+            return Json(new
+            {
+                ok = false,
+                message = "No se recibieron los precios de los productos."
+            });
+        }
+
+        if (prices.Count != order.OrderDetails.Count ||
+            prices.Select(x => x.OrderDetailId).Distinct().Count() != prices.Count ||
+            prices.Any(x => !order.OrderDetails.Any(d => d.Id == x.OrderDetailId)))
+        {
+            return Json(new
+            {
+                ok = false,
+                message = "Los productos enviados no corresponden a la orden."
+            });
+        }
+
+        var subtotal = 0;
+
+        foreach (var detail in order.OrderDetails)
+        {
+            var price = prices
+                .FirstOrDefault(x => x.OrderDetailId == detail.Id);
+
+            if (price == null)
+            {
+                return Json(new
+                {
+                    ok = false,
+                    message = "No se recibió el precio de uno de los productos."
+                });
+            }
+
+            if (price.UnitPrice < 0)
+            {
+                return Json(new
+                {
+                    ok = false,
+                    message = "El precio de un producto no puede ser negativo."
+                });
+            }
+
+            var modifierCost = detail.OrderDetailModifiers.Sum(x => x.ExtraCost);
+
+            if (price.UnitPrice < modifierCost)
+            {
+                return Json(new
+                {
+                    ok = false,
+                    message = "El precio unitario no puede ser menor al costo de los adicionales."
+                });
+            }
+
+            detail.Price = price.UnitPrice - modifierCost;
+
+            subtotal += price.UnitPrice * detail.Quantity;
+        }
+
+        order.SubTotal = subtotal;
+        order.Total = order.SubTotal + order.Tax + order.DeliveryCost;
+
+        if (receivedAmount < 0)
+        {
+            return Json(new
+            {
+                ok = false,
+                message = "El valor recibido no puede ser negativo."
+            });
+        }
 
         if (receivedAmount < order.Total)
         {
@@ -394,4 +507,10 @@ public class OrderController : Controller
 
         return View(order);
     }
+}
+
+public class OrderDetailPriceDto
+{
+    public int OrderDetailId { get; set; }
+    public int UnitPrice { get; set; }
 }

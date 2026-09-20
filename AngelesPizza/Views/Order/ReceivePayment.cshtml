@@ -68,11 +68,18 @@
                                     </td>
 
                                     <td class="text-end">
-                                        @unitPrice.ToString("N0")
+                                        <input type="number"
+                                               class="form-control form-control-sm text-end unit-price"
+                                               data-order-detail-id="@item.Id"
+                                               value="@unitPrice"
+                                               min="0"
+                                               step="50"/>
                                     </td>
 
                                     <td class="text-end">
-                                        @total.ToString("N0")
+                                        <span class="item-total">
+                                            @total.ToString("N0")
+                                        </span>
                                     </td>
 
                                 </tr>
@@ -101,7 +108,7 @@
 
                     <div class="d-flex justify-content-between mb-2">
                         <span>SubTotal</span>
-                        <strong>@Model.SubTotal.ToString("N0")</strong>
+                        <strong id="orderSubtotal">@Model.SubTotal.ToString("N0")</strong>
                     </div>
 
                     @if (Model.OrderType == AngelesPizza.Enums.OrderType.Domicilio && Model.DeliveryCost > 0)
@@ -123,7 +130,7 @@
 
                         <h5>Total</h5>
 
-                        <h5>@Model.Total.ToString("N0")</h5>
+                        <h5 id="orderTotal">@Model.Total.ToString("N0")</h5>
 
                     </div>
 
@@ -197,32 +204,82 @@
 
     <script>
 
-        function calculateChange() {
+            function calculateOrderTotal() {
 
-            let total = @Model.Total;
+            let subtotal = 0;
+
+            $(".unit-price").each(function () {
+
+                let price = parseFloat($(this).val()) || 0;
+                let quantity = parseInt(
+                    $(this).closest("tr").find("strong").text().replace(/\D/g, "")
+                ) || 1;
+
+                let total = price * quantity;
+
+                $(this)
+                    .closest("tr")
+                    .find(".item-total")
+                    .text(total.toLocaleString());
+
+                subtotal += total;
+            });
+
+            let deliveryCost = @Model.DeliveryCost;
+            let tax = @Model.Tax;
+
+            let total = subtotal + deliveryCost + tax;
+
+            $("#orderSubtotal").text(subtotal.toLocaleString());
+            $("#orderTotal").text(total.toLocaleString());
+
+            $("#ReceivedAmount")
+                .attr("min", total)
+                .val(total);
+
+            calculateChange();
+        }
+
+        $(".unit-price").on("input change", function () {
+            calculateOrderTotal();
+        });
+
+        function calculateChange() {
+            let total = parseInt(
+                $("#orderTotal").text().replace(/\D/g, "")
+            ) || 0;
 
             let received = parseInt($("#ReceivedAmount").val()) || 0;
-
             let change = received - total;
 
-            if (change < 0)
-                change = 0;
+            if (change < 0) change = 0;
 
             $("#ChangeAmount").val(change.toLocaleString());
-
         }
 
         $("#ReceivedAmount").on("keyup change", calculateChange);
 
         calculateChange();
 
-                $("#btnPay").click(function () {
+        $("#btnPay").click(function () {
+
+            let unitPrices = [];
+
+            $(".unit-price").each(function () {
+
+                unitPrices.push({
+                    orderDetailId: $(this).data("order-detail-id"),
+                    unitPrice: parseInt($(this).val()) || 0
+                });
+
+            });
 
             $.post("/Order/Pay", {
 
                 orderId: @Model.Id,
                 paymentType: $("#PaymentType").val(),
-                receivedAmount: $("#ReceivedAmount").val()
+                receivedAmount: $("#ReceivedAmount").val(),
+                unitPrices: JSON.stringify(unitPrices)
 
             }, function (response) {
 
@@ -240,6 +297,4 @@
         });
 
     </script>
-
-
 }

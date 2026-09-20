@@ -113,8 +113,19 @@
 
                                     @foreach (var modifier in item.OrderDetailModifiers)
                                     {
-                                        <div class="ms-3">
-                                            @modifier.ProductModifier.Name
+                                        var modifierName = modifier.ProductModifier.Name ?? "";
+                                        var parenthesisIndex = modifierName.IndexOf('(');
+
+                                        if (parenthesisIndex >= 0)
+                                        {
+                                            modifierName = modifierName.Substring(0, parenthesisIndex).Trim();
+                                        }
+
+                                        <div class="small">
+                                            @modifierName
+                                            @(modifier.ProductModifier.ExtraCost > 0
+                                                ? $" (+${modifier.ProductModifier.ExtraCost:N0})"
+                                                : "")
                                         </div>
                                     }
 
