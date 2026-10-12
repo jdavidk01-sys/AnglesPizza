@@ -142,8 +142,8 @@ namespace AngelesPizza.Migrations
                         .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("Phone")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("Reference")
                         .HasMaxLength(250)
