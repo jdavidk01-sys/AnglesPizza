@@ -1,0 +1,151 @@
+﻿@model AngelesPizza.Models.CashRegister
+
+@{
+    ViewData["Title"] = $"Detalle de Caja #{Model.Id}";
+    bool isOpen = Model.IsClosed == false || Model.IsClosed == null;
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            Detalle de Caja #@Model.Id
+        </h2>
+
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Volver al Historial
+        </a>
+    </div>
+
+    <div class="row">
+
+        <!-- RESUMEN DE CAJA -->
+        <div class="col-md-5 mb-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    <strong>Información General</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th>Estado</th>
+                                <td>
+                                    @if (isOpen)
+                                    {
+                                        <span class="badge bg-warning">Abierta</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Cerrada</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Apertura</th>
+                                <td>@Model.OpenedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                            <tr>
+                                <th>Cierre</th>
+                                <td>@(Model.ClosedAt.HasValue ? Model.ClosedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Monto Inicial</th>
+                                <td>$@Model.InitialAmount.ToString("N0")</td>
+                            </tr>
+                            <tr>
+                                <th>Ventas Efectivo</th>
+                                <td>$@Model.TotalCashSales.ToString("N0")</td>
+                            </tr>
+                            <tr>
+                                <th>Ventas Transferencia</th>
+                                <td>$@Model.TotalTransferSales.ToString("N0")</td>
+                            </tr>
+                            <tr>
+                                <th>Ventas Tarjeta</th>
+                                <td>$@Model.TotalCardSales.ToString("N0")</td>
+                            </tr>
+                            <tr>
+                                <th>Efectivo Esperado</th>
+                                <td>$@Model.FinalCashExpected.ToString("N0")</td>
+                            </tr>
+                            <tr>
+                                <th>Efectivo Real</th>
+                                <td>@(Model.FinalCashReal.HasValue ? $"${Model.FinalCashReal.Value.ToString("N0")}" : "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Diferencia</th>
+                                <td>@(Model.CashDifference.HasValue ? $"${Model.CashDifference.Value.ToString("N0")}" : "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Observaciones</th>
+                                <td>@(string.IsNullOrWhiteSpace(Model.Notes) ? "Sin observaciones" : Model.Notes)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- DETALLE DE PEDIDOS POR PAGO -->
+        <div class="col-md-7 mb-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    <strong>Desglose de Pedidos por Método de Pago</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <ul class="nav nav-tabs mb-3" id="paymentDetailsTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold text-success" id="d-cash-tab" data-bs-toggle="tab" data-bs-target="#d-cash-pane" type="button" role="tab">
+                                Efectivo (@Model.Payments.Count(p => p.PaymentType == AngelesPizza.Enums.PaymentType.Efectivo))
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold text-primary" id="d-transfer-tab" data-bs-toggle="tab" data-bs-target="#d-transfer-pane" type="button" role="tab">
+                                Transferencia (@Model.Payments.Count(p => p.PaymentType == AngelesPizza.Enums.PaymentType.Transferencia))
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold text-warning" id="d-card-tab" data-bs-toggle="tab" data-bs-target="#d-card-pane" type="button" role="tab">
+                                Tarjeta (@Model.Payments.Count(p => p.PaymentType == AngelesPizza.Enums.PaymentType.Tarjeta))
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="paymentDetailsTabsContent">
+
+                        <div class="tab-pane fade show active" id="d-cash-pane" role="tabpanel">
+                            @await Html.PartialAsync("_PaymentOrderDetails", Model.Payments.Where(p => p.PaymentType == AngelesPizza.Enums.PaymentType.Efectivo))
+                        </div>
+
+                        <div class="tab-pane fade" id="d-transfer-pane" role="tabpanel">
+                            @await Html.PartialAsync("_PaymentOrderDetails", Model.Payments.Where(p => p.PaymentType == AngelesPizza.Enums.PaymentType.Transferencia))
+                        </div>
+
+                        <div class="tab-pane fade" id="d-card-pane" role="tabpanel">
+                            @await Html.PartialAsync("_PaymentOrderDetails", Model.Payments.Where(p => p.PaymentType == AngelesPizza.Enums.PaymentType.Tarjeta))
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

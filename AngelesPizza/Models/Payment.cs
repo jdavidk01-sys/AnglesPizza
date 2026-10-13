@@ -30,5 +30,8 @@ namespace AngelesPizza.Models
         [StringLength(250)]
         [Display(Name = "Observaciones")]
         public string? Notes { get; set; }
+
+        public int? CashRegisterId { get; set; }
+        public CashRegister CashRegister { get; set; } = null!;
     }
 }

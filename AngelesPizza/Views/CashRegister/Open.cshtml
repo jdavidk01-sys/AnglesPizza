@@ -1,0 +1,74 @@
+﻿@{
+    ViewData["Title"] = "Apertura de Caja";
+    int suggestedInitial = ViewBag.SuggestedInitial ?? 0;
+}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+        Apertura de Caja
+    </h2>
+
+    <div class="row">
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+                    <strong>Monto Inicial</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <form asp-action="Open" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Ingrese el monto en efectivo con el que inicia la caja
+                            </label>
+
+                            <input type="number" 
+                                   name="initialAmount" 
+                                   id="initialAmount" 
+                                   class="form-control" 
+                                   value="@suggestedInitial" 
+                                   min="0" 
+                                   step="50" 
+                                   required />
+
+                            <div class="form-text">
+                                Sugerido según el último cierre de caja: <strong>$@suggestedInitial.ToString("N0")</strong>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <a asp-controller="OrderDashboard" 
+                               asp-action="Index" 
+                               class="btn btn-secondary">
+                                Cancelar
+                            </a>
+
+                            <button type="submit" 
+                                    class="btn btn-success">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                                Abrir Caja e Ir al POS
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

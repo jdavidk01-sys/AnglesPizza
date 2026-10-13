@@ -198,6 +198,31 @@
 
 </div>
 
+<!-- MODAL ALERTA CAJA CERRADA -->
+<div class="modal fade" id="cashRegisterAlertModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Caja Cerrada
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="cashRegisterAlertMessage">No hay ninguna caja abierta. Debe abrir la caja antes de registrar pedidos.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Entendido
+                </button>
+                <a asp-controller="CashRegister" asp-action="Open" class="btn btn-success">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Abrir Caja
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL ADICIONALES/SABORES-->
 <div class="modal fade" id="productModal" tabindex="-1">
 
@@ -206,7 +231,6 @@
         <div class="modal-content">
 
             <div class="modal-header">
-
 
                 <h4 class="modal-title fw-bold" id="productName">
                     Producto
@@ -451,62 +475,62 @@
 
         });
 
-$(document).on("click", ".product-btn", function () {
+        $(document).on("click", ".product-btn", function () {
 
-    const productId = $(this).data("id");
+            const productId = $(this).data("id");
 
-    $("#ProductId").val(productId);
+            $("#ProductId").val(productId);
 
-    $("#productName").text($(this).data("name"));
+            $("#productName").text($(this).data("name"));
 
-    $("#Quantity").val(1);
+            $("#Quantity").val(1);
 
-    $("#Notes").val("");
+            $("#Notes").val("");
 
-    $.get("/Order/GetModifiers",
-    {
-        productId: productId
-    },
-    function (modifiers) {
+            $.get("/Order/GetModifiers",
+            {
+                productId: productId
+            },
+            function (modifiers) {
 
-        let html = "";
+                let html = "";
 
-        modifiers.forEach(function (m) {
+                modifiers.forEach(function (m) {
 
-            html += `
-                <div class="form-check">
+                    html += `
+                        <div class="form-check">
 
-                    <input class="form-check-input modifier-check"
-                           type="checkbox"
-                           value="${m.id}"
-                           data-cost="${m.extraCost}">
+                            <input class="form-check-input modifier-check"
+                                   type="checkbox"
+                                   value="${m.id}"
+                                   data-cost="${m.extraCost}">
 
-                    <label class="form-check-label fs-6">
+                            <label class="form-check-label fs-6">
 
-                        ${m.name}
-                        ${m.extraCost > 0 ? `+$${m.extraCost.toLocaleString()}` : ''}
+                                ${m.name}
+                                ${m.extraCost > 0 ? `+$${m.extraCost.toLocaleString()}` : ''}
 
-                    </label>
+                            </label>
 
-                </div>`;
+                        </div>`;
+                });
+
+                if (modifiers.length === 0) {
+
+                    html = `
+                        <div class="text-muted">
+                            Este producto no tiene sabores o adicionales.
+                        </div>`;
+                }
+
+                $("#modifierList").html(html);
+
+                const modal = new bootstrap.Modal(document.getElementById("productModal"));
+                modal.show();
+
+            });
+
         });
-
-        if (modifiers.length === 0) {
-
-            html = `
-                <div class="text-muted">
-                    Este producto no tiene sabores o adicionales.
-                </div>`;
-        }
-
-        $("#modifierList").html(html);
-
-        const modal = new bootstrap.Modal(document.getElementById("productModal"));
-        modal.show();
-
-    });
-
-});
 
         $("#btnAddProduct").click(function () {
 
@@ -663,7 +687,6 @@ $(document).on("click", ".product-btn", function () {
 
         });
 
-
         $("#btnConfirmOrder").click(function () {
 
             let btn = $(this);
@@ -688,7 +711,12 @@ $(document).on("click", ".product-btn", function () {
 
                     btn.prop("disabled", false);
 
-                    alert(response.message);
+                    if (response.message) {
+                        $("#cashRegisterAlertMessage").text(response.message);
+                    }
+
+                    const alertModal = new bootstrap.Modal(document.getElementById("cashRegisterAlertModal"));
+                    alertModal.show();
                 }
 
             });
@@ -707,7 +735,7 @@ $(document).on("click", ".product-btn", function () {
 
             placeholder: "Buscar cliente por nombre o teléfono...",
             allowEmptyOption: true
-        });;
+        });
 
         $("#OrderType").change(function () {
 
@@ -883,6 +911,5 @@ $(document).on("click", ".product-btn", function () {
         });
 
     </script>
-
 
 }
