@@ -94,52 +94,6 @@ namespace AngelesPizza.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("AngelesPizza.Models.CashRegister", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CashDifference")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ClosedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("FinalCashExpected")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FinalCashReal")
-                        .HasColumnType("int");
-
-                    b.Property<int>("InitialAmount")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsClosed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("OpenedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TotalCardSales")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalCashSales")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalTransferSales")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CashRegisters");
-                });
-
             modelBuilder.Entity("AngelesPizza.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -365,9 +319,6 @@ namespace AngelesPizza.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CashRegisterId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ChangeAmount")
                         .HasColumnType("int");
 
@@ -388,8 +339,6 @@ namespace AngelesPizza.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CashRegisterId");
 
                     b.HasIndex("OrderId");
 
@@ -706,18 +655,11 @@ namespace AngelesPizza.Migrations
 
             modelBuilder.Entity("AngelesPizza.Models.Payment", b =>
                 {
-                    b.HasOne("AngelesPizza.Models.CashRegister", "CashRegister")
-                        .WithMany("Payments")
-                        .HasForeignKey("CashRegisterId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("AngelesPizza.Models.Order", "Order")
                         .WithMany("Payments")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("CashRegister");
 
                     b.Navigation("Order");
                 });
@@ -801,11 +743,6 @@ namespace AngelesPizza.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("AngelesPizza.Models.CashRegister", b =>
-                {
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("AngelesPizza.Models.Category", b =>

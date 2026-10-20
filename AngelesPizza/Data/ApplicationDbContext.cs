@@ -35,8 +35,6 @@ namespace AngelesPizza.Data
 
         public DbSet<ProductModifierProduct> ProductModifierProducts { get; set; }
 
-        public DbSet<CashRegister> CashRegisters { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -104,12 +102,6 @@ namespace AngelesPizza.Data
                 .HasOne(sh => sh.Order)
                 .WithMany(o => o.StatusHistory)
                 .HasForeignKey(sh => sh.OrderId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Payment>()
-                .HasOne(p => p.CashRegister)
-                .WithMany(cr => cr.Payments)
-                .HasForeignKey(p => p.CashRegisterId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             // ÍNDICES

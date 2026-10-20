@@ -206,28 +206,15 @@ public class OrderController : Controller
         });
     }
 
-    // Crear pedido
+    //Crear pedido
     [HttpPost]
     public async Task<IActionResult> Confirm(OrderType orderType, int? customerId, int? restaurantTableId, int deliveryCost = 0)
     {
-        // 1. Validar que exista una caja abierta antes de permitir crear el pedido
-        var activeCashRegister = await _context.CashRegisters
-            .FirstOrDefaultAsync(r => r.IsClosed == false || r.IsClosed == null);
-
-        if (activeCashRegister == null)
-        {
-            return Json(new
-            {
-                ok = false,
-                message = "No hay ninguna caja abierta. Debe abrir la caja antes de registrar pedidos."
-            });
-        }
-
         var tempOrder = HttpContext.Session
             .GetObject<List<TempOrderItem>>("ORDER");
 
         if (tempOrder == null || !tempOrder.Any())
-            return Json(new { ok = false, message = "El pedido está vacío." });
+            return Json(new { ok = false });
 
         if (orderType == OrderType.Mesa && restaurantTableId == null)
         {
@@ -250,6 +237,7 @@ public class OrderController : Controller
         };
 
         _context.Orders.Add(order);
+
         await _context.SaveChangesAsync();
 
         foreach (var item in tempOrder)
@@ -265,6 +253,7 @@ public class OrderController : Controller
             };
 
             _context.OrderDetails.Add(detail);
+
             await _context.SaveChangesAsync();
 
             foreach (var modifierId in item.ModifierIds)
@@ -282,10 +271,14 @@ public class OrderController : Controller
         }
 
         order.SubTotal = tempOrder.Sum(x => x.Total);
+
+        // Por ahora sin IVA
         order.Tax = 0;
+
         order.Total = order.SubTotal + order.Tax + order.DeliveryCost;
 
         await _context.SaveChangesAsync();
+
         HttpContext.Session.Remove("ORDER");
 
         return Json(new
@@ -295,27 +288,30 @@ public class OrderController : Controller
         });
     }
 
-    // Recibir el pago
+    public async Task<IActionResult> ReceivePayment(int id)
+    {
+        var order = await _context.Orders
+            .Include(o => o.OrderDetails)
+                .ThenInclude(d => d.Product)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(d => d.OrderDetailModifiers)
+                    .ThenInclude(m => m.ProductModifier)
+            .FirstOrDefaultAsync(o => o.Id == id);
+
+        if (order == null)
+            return NotFound();
+
+        return View(order);
+    }
+
+    //Recibir el pago
     [HttpPost]
     public async Task<IActionResult> Pay(
-        int orderId,
-        PaymentType paymentType,
-        int receivedAmount,
-        string unitPrices)
+    int orderId,
+    PaymentType paymentType,
+    int receivedAmount,
+    string unitPrices)
     {
-        // 1. Verificar que exista una caja activa
-        var activeCashRegister = await _context.CashRegisters
-            .FirstOrDefaultAsync(r => r.IsClosed == false || r.IsClosed == null);
-
-        if (activeCashRegister == null)
-        {
-            return Json(new
-            {
-                ok = false,
-                message = "No hay ninguna caja abierta. Debe abrir la caja antes de procesar el pago."
-            });
-        }
-
         var order = await _context.Orders
             .Include(o => o.OrderDetails)
                 .ThenInclude(d => d.OrderDetailModifiers)
@@ -417,6 +413,7 @@ public class OrderController : Controller
             }
 
             detail.Price = price.UnitPrice - modifierCost;
+
             subtotal += price.UnitPrice * detail.Quantity;
         }
 
@@ -441,11 +438,9 @@ public class OrderController : Controller
             });
         }
 
-        // 2. Crear pago asociado a la caja activa
         var payment = new Payment
         {
             OrderId = order.Id,
-            CashRegisterId = activeCashRegister.Id,
             PaymentType = paymentType,
             Amount = order.Total,
             ReceivedAmount = receivedAmount,
@@ -460,7 +455,7 @@ public class OrderController : Controller
         {
             OrderId = order.Id,
             Status = OrderStatus.Fila,
-            Notes = $"Pago recibido vía {paymentType}."
+            Notes = "Pago recibido."
         });
 
         await _context.SaveChangesAsync();
@@ -470,22 +465,6 @@ public class OrderController : Controller
             ok = true,
             orderId = order.Id
         });
-    }
-
-    public async Task<IActionResult> ReceivePayment(int id)
-    {
-        var order = await _context.Orders
-            .Include(o => o.OrderDetails)
-                .ThenInclude(d => d.Product)
-            .Include(o => o.OrderDetails)
-                .ThenInclude(d => d.OrderDetailModifiers)
-                    .ThenInclude(m => m.ProductModifier)
-            .FirstOrDefaultAsync(o => o.Id == id);
-
-        if (order == null)
-            return NotFound();
-
-        return View(order);
     }
 
     //Impresion de pedidos
