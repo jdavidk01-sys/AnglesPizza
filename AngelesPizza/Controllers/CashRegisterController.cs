@@ -3,6 +3,8 @@ using AngelesPizza.Enums;
 using AngelesPizza.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace AngelesPizza.Controllers
 {
@@ -16,11 +18,30 @@ namespace AngelesPizza.Controllers
         }
 
         // Historial de Cajas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DateTime? fromDate, DateTime? toDate)
         {
-            var registers = await _context.CashRegisters
+            var query = _context.CashRegisters.AsQueryable();
+
+            // Filtro por fecha inicial (desde el comienzo del día)
+            if (fromDate.HasValue)
+            {
+                var start = fromDate.Value.Date;
+                query = query.Where(r => r.OpenedAt >= start);
+            }
+
+            // Filtro por fecha final (hasta el último milisegundo del día)
+            if (toDate.HasValue)
+            {
+                var end = toDate.Value.Date.AddDays(1).AddTicks(-1);
+                query = query.Where(r => r.OpenedAt <= end);
+            }
+
+            var registers = await query
                 .OrderByDescending(r => r.OpenedAt)
                 .ToListAsync();
+
+            ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
+            ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
 
             return View(registers);
         }
@@ -156,6 +177,117 @@ namespace AngelesPizza.Controllers
                 return NotFound();
 
             return View(register);
+        }
+
+        // GET: CashRegister/ExportExcel
+        public async Task<IActionResult> ExportExcel(DateTime? fromDate, DateTime? toDate)
+        {
+            var query = _context.CashRegisters.AsQueryable();
+
+            if (fromDate.HasValue)
+            {
+                var start = fromDate.Value.Date;
+                query = query.Where(r => r.OpenedAt >= start);
+            }
+
+            if (toDate.HasValue)
+            {
+                var end = toDate.Value.Date.AddDays(1).AddTicks(-1);
+                query = query.Where(r => r.OpenedAt <= end);
+            }
+
+            var registers = await query
+                .OrderBy(r => r.OpenedAt)
+                .ToListAsync();
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Historial de Cajas");
+
+                // 1. Encabezados de la tabla
+                string[] headers = {
+            "ID", "Apertura", "Cierre", "Monto Inicial",
+            "Ventas Efec.", "Ventas Transf.", "Ventas Tarj.",
+            "Esperado", "Real", "Diferencia", "Estado", "Notas"
+        };
+
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    var cell = worksheet.Cell(1, i + 1);
+                    cell.Value = headers[i];
+                    cell.Style.Font.Bold = true;
+                    cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#212529");
+                    cell.Style.Font.FontColor = XLColor.White;
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+
+                // 2. Filas de datos
+                int row = 2;
+                foreach (var item in registers)
+                {
+                    bool isOpen = item.IsClosed == false || item.IsClosed == null;
+
+                    worksheet.Cell(row, 1).Value = item.Id;
+                    worksheet.Cell(row, 2).Value = item.OpenedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm");
+                    worksheet.Cell(row, 3).Value = item.ClosedAt.HasValue ? item.ClosedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "-";
+                    worksheet.Cell(row, 4).Value = item.InitialAmount;
+                    worksheet.Cell(row, 5).Value = item.TotalCashSales;
+                    worksheet.Cell(row, 6).Value = item.TotalTransferSales;
+                    worksheet.Cell(row, 7).Value = item.TotalCardSales;
+                    worksheet.Cell(row, 8).Value = item.FinalCashExpected;
+                    worksheet.Cell(row, 9).Value = item.FinalCashReal ?? 0;
+                    worksheet.Cell(row, 10).Value = !isOpen ? (item.CashDifference ?? 0) : 0;
+                    worksheet.Cell(row, 11).Value = isOpen ? "Abierta" : "Cerrada";
+                    worksheet.Cell(row, 12).Value = item.Notes ?? "";
+
+                    // Formato de moneda para columnas de dinero
+                    for (int col = 4; col <= 10; col++)
+                    {
+                        worksheet.Cell(row, col).Style.NumberFormat.Format = "$#,##0";
+                    }
+
+                    row++;
+                }
+
+                // 3. Fila de Totales con fórmulas SUMA
+                if (registers.Any())
+                {
+                    worksheet.Cell(row, 1).Value = "TOTALES";
+                    worksheet.Cell(row, 1).Style.Font.Bold = true;
+
+                    worksheet.Cell(row, 4).FormulaA1 = $"SUM(D2:D{row - 1})";
+                    worksheet.Cell(row, 5).FormulaA1 = $"SUM(E2:E{row - 1})";
+                    worksheet.Cell(row, 6).FormulaA1 = $"SUM(F2:F{row - 1})";
+                    worksheet.Cell(row, 7).FormulaA1 = $"SUM(G2:G{row - 1})";
+                    worksheet.Cell(row, 8).FormulaA1 = $"SUM(H2:H{row - 1})";
+                    worksheet.Cell(row, 9).FormulaA1 = $"SUM(I2:I{row - 1})";
+                    worksheet.Cell(row, 10).FormulaA1 = $"SUM(J2:J{row - 1})";
+
+                    var totalRow = worksheet.Row(row);
+                    totalRow.Style.Font.Bold = true;
+                    totalRow.Style.Fill.BackgroundColor = XLColor.FromHtml("#E9ECEF");
+
+                    for (int col = 4; col <= 10; col++)
+                    {
+                        worksheet.Cell(row, col).Style.NumberFormat.Format = "$#,##0";
+                    }
+                }
+
+                worksheet.Columns().AdjustToContents();
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    var content = stream.ToArray();
+                    string fileName = $"Historial_Cajas_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+
+                    return File(
+                        content,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        fileName
+                    );
+                }
+            }
         }
     }
 }

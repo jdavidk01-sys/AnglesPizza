@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Historial de Cajas";
+    string fromDate = ViewBag.FromDate as string ?? "";
+    string toDate = ViewBag.ToDate as string ?? "";
 }
 
 <div class="container-fluid">
@@ -17,11 +19,73 @@
         </a>
     </div>
 
+    <!-- TARJETA DE FILTROS POR FECHA -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <strong>Filtro por Fechas</strong>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Index" method="get" id="filterForm">
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-3">
+                        <label class="form-label">
+                            Desde (Apertura)
+                        </label>
+                        <input type="date" 
+                               class="form-control" 
+                               name="fromDate" 
+                               id="fromDate" 
+                               value="@fromDate" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">
+                            Hasta (Apertura)
+                        </label>
+                        <input type="date" 
+                               class="form-control" 
+                               name="toDate" 
+                               id="toDate" 
+                               value="@toDate" />
+                    </div>
+
+                    <div class="col-md-6 text-md-end">
+
+                        <button type="submit" class="btn btn-primary me-1">
+                            <i class="bi bi-funnel"></i>
+                            Filtrar
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-outline-secondary me-1">
+                            <i class="bi bi-x-circle"></i>
+                            Limpiar
+                        </a>
+
+                        <button type="button" id="btnExportExcel" class="btn btn-success">
+                            <i class="bi bi-file-earmark-excel"></i>
+                            Exportar a Excel
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
     @if (!Model.Any())
     {
         <div class="alert alert-warning">
             <i class="bi bi-exclamation-circle"></i>
-            No se encontraron registros de caja anteriores.
+            No se encontraron registros de caja en el rango de fechas seleccionado.
         </div>
     }
     else
@@ -161,6 +225,15 @@
 
                 }
 
+            });
+
+            // Redirigir a la descarga en Excel con las fechas seleccionadas
+            $('#btnExportExcel').click(function () {
+                let fromDate = $('#fromDate').val();
+                let toDate = $('#toDate').val();
+
+                let url = '@Url.Action("ExportExcel", "CashRegister")' + '?fromDate=' + encodeURIComponent(fromDate) + '&toDate=' + encodeURIComponent(toDate);
+                window.location.href = url;
             });
 
         });
