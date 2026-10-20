@@ -37,6 +37,8 @@ namespace AngelesPizza.Data
 
         public DbSet<CashRegister> CashRegisters { get; set; }
 
+        public DbSet<Bank> Banks { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -112,6 +114,13 @@ namespace AngelesPizza.Data
                 .HasForeignKey(p => p.CashRegisterId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            // Bank -> Payments
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Bank)
+                .WithMany(b => b.Payments)
+                .HasForeignKey(p => p.BankId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             // ÍNDICES
 
             modelBuilder.Entity<Category>()
@@ -134,6 +143,22 @@ namespace AngelesPizza.Data
 
             modelBuilder.Entity<Order>()
                 .HasIndex(o => o.OrderType);
+
+            modelBuilder.Entity<Bank>()
+                .HasIndex(b => b.Name);
+
+            modelBuilder.Entity<Bank>().HasData(
+                new Bank { Id = 1, Name = "Bancolombia", SwiftCode = "COLCCO22", IsActive = true, CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc) },
+                new Bank { Id = 2, Name = "Banco de Bogotá", SwiftCode = "BOGOCO22", IsActive = true, CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc) },
+                new Bank { Id = 3, Name = "Banco Santander", SwiftCode = "BSANESCO", IsActive = true, CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc) },
+                new Bank { Id = 4, Name = "BBVA", SwiftCode = "BBVAESCO", IsActive = true, CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc) },
+                new Bank { Id = 5, Name = "Davivienda", SwiftCode = "DAVICO22", IsActive = true, CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc) },
+                new Bank { Id = 6, Name = "Banco Caja Social", SwiftCode = "CAJACO22", IsActive = true, CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc) },
+                new Bank { Id = 7, Name = "Banco Occidente", SwiftCode = "OCCOCO22", IsActive = true, CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc) },
+                new Bank { Id = 8, Name = "Banco Popular", SwiftCode = "BOPOCO22", IsActive = true, CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc) },
+                new Bank { Id = 9, Name = "Banco Falabella", SwiftCode = "FALACO22", IsActive = true, CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc) },
+                new Bank { Id = 10, Name = "Scotiabank", SwiftCode = "SCBLESCO", IsActive = true, CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc) }
+            );
         }
     }
 

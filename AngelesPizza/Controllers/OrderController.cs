@@ -301,7 +301,8 @@ public class OrderController : Controller
         int orderId,
         PaymentType paymentType,
         int receivedAmount,
-        string unitPrices)
+        string unitPrices,
+        int? bankId = null)
     {
         // 1. Verificar que exista una caja activa
         var activeCashRegister = await _context.CashRegisters
@@ -441,6 +442,39 @@ public class OrderController : Controller
             });
         }
 
+        // Validar que el banco sea obligatorio para transferencias
+        if (paymentType == PaymentType.Transferencia && (!bankId.HasValue || bankId.Value <= 0))
+        {
+            return Json(new
+            {
+                ok = false,
+                message = "Debe seleccionar un banco para pagos por transferencia."
+            });
+        }
+
+        // Validar que el banco exista si se proporciona
+        if (bankId.HasValue && bankId.Value > 0)
+        {
+            var bank = await _context.Banks.FindAsync(bankId.Value);
+            if (bank == null)
+            {
+                return Json(new
+                {
+                    ok = false,
+                    message = "El banco seleccionado no existe."
+                });
+            }
+
+            if (!bank.IsActive)
+            {
+                return Json(new
+                {
+                    ok = false,
+                    message = "El banco seleccionado no está activo."
+                });
+            }
+        }
+
         // 2. Crear pago asociado a la caja activa
         var payment = new Payment
         {
@@ -449,7 +483,8 @@ public class OrderController : Controller
             PaymentType = paymentType,
             Amount = order.Total,
             ReceivedAmount = receivedAmount,
-            ChangeAmount = receivedAmount - order.Total
+            ChangeAmount = receivedAmount - order.Total,
+            BankId = bankId.HasValue && bankId.Value > 0 ? bankId.Value : null
         };
 
         _context.Payments.Add(payment);
@@ -484,6 +519,14 @@ public class OrderController : Controller
 
         if (order == null)
             return NotFound();
+
+        // Cargar bancos activos para la transferencia
+        var banks = await _context.Banks
+            .Where(b => b.IsActive)
+            .OrderBy(b => b.Name)
+            .ToListAsync();
+
+        ViewBag.Banks = new SelectList(banks, "Id", "Name");
 
         return View(order);
     }

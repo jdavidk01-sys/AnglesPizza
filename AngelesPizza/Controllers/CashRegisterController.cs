@@ -97,6 +97,8 @@ namespace AngelesPizza.Controllers
                     .ThenInclude(p => p.Order)
                         .ThenInclude(o => o.OrderDetails)
                             .ThenInclude(d => d.Product)
+                .Include(r => r.Payments)
+                    .ThenInclude(p => p.Bank)
                 .FirstOrDefaultAsync(r => r.IsClosed == false || r.IsClosed == null);
 
             if (activeRegister == null)
@@ -171,6 +173,8 @@ namespace AngelesPizza.Controllers
                     .ThenInclude(p => p.Order)
                         .ThenInclude(o => o.OrderDetails)
                             .ThenInclude(d => d.Product)
+                .Include(r => r.Payments)
+                    .ThenInclude(p => p.Bank)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (register == null)

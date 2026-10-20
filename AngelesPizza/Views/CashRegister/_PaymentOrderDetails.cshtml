@@ -74,6 +74,14 @@ else
                             </div>
                         }
 
+                        @if (payment.PaymentType == AngelesPizza.Enums.PaymentType.Transferencia && payment.Bank != null)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mt-3 px-2 py-2 bg-light rounded">
+                                <span class="fw-bold text-primary">Banco:</span>
+                                <span>@payment.Bank.Name</span>
+                            </div>
+                        }
+
                     </div>
                 </div>
 

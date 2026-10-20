@@ -17,7 +17,7 @@ namespace AngelesPizza.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.10")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -92,6 +92,118 @@ namespace AngelesPizza.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("AngelesPizza.Models.Bank", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SwiftCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("Banks");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Bancolombia",
+                            SwiftCode = "COLCCO22"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Banco de Bogotá",
+                            SwiftCode = "BOGOCO22"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Banco Santander",
+                            SwiftCode = "BSANESCO"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "BBVA",
+                            SwiftCode = "BBVAESCO"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Davivienda",
+                            SwiftCode = "DAVICO22"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Banco Caja Social",
+                            SwiftCode = "CAJACO22"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Banco Occidente",
+                            SwiftCode = "OCCOCO22"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Banco Popular",
+                            SwiftCode = "BOPOCO22"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Banco Falabella",
+                            SwiftCode = "FALACO22"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 10, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Scotiabank",
+                            SwiftCode = "SCBLESCO"
+                        });
                 });
 
             modelBuilder.Entity("AngelesPizza.Models.CashRegister", b =>
@@ -365,6 +477,9 @@ namespace AngelesPizza.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
+                    b.Property<int?>("BankId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("CashRegisterId")
                         .HasColumnType("int");
 
@@ -388,6 +503,8 @@ namespace AngelesPizza.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BankId");
 
                     b.HasIndex("CashRegisterId");
 
@@ -706,6 +823,11 @@ namespace AngelesPizza.Migrations
 
             modelBuilder.Entity("AngelesPizza.Models.Payment", b =>
                 {
+                    b.HasOne("AngelesPizza.Models.Bank", "Bank")
+                        .WithMany("Payments")
+                        .HasForeignKey("BankId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("AngelesPizza.Models.CashRegister", "CashRegister")
                         .WithMany("Payments")
                         .HasForeignKey("CashRegisterId")
@@ -716,6 +838,8 @@ namespace AngelesPizza.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Bank");
 
                     b.Navigation("CashRegister");
 
@@ -801,6 +925,11 @@ namespace AngelesPizza.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AngelesPizza.Models.Bank", b =>
+                {
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("AngelesPizza.Models.CashRegister", b =>

@@ -155,6 +155,31 @@
 
                     </div>
 
+                    <div class="mb-3" id="bankContainer" style="display: none;">
+
+                        <label class="form-label">
+                            Banco
+                        </label>
+
+                        @if (ViewBag.Banks is not null)
+                        {
+                            <select id="BankId" class="form-select">
+                                <option value="">Selecciona un banco</option>
+                                @foreach (var bank in ViewBag.Banks)
+                                {
+                                    <option value="@bank.Value">@bank.Text</option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <select id="BankId" class="form-select" disabled>
+                                <option>No hay bancos disponibles</option>
+                            </select>
+                        }
+
+                    </div>
+
                     <div class="mb-3">
 
                         <label class="form-label">
@@ -244,6 +269,26 @@
             calculateOrderTotal();
         });
 
+        // Mostrar/ocultar banco según tipo de pago
+        function toggleBankField() {
+            const paymentType = $("#PaymentType").val();
+            const bankContainer = $("#bankContainer");
+            const bankInput = $("#BankId");
+
+            // Transferencia = 2
+            if (paymentType == 2) {
+                bankContainer.show();
+                bankInput.attr("required", "required");
+            } else {
+                bankContainer.hide();
+                bankInput.removeAttr("required");
+                bankInput.val("");
+            }
+        }
+
+        $("#PaymentType").on("change", toggleBankField);
+        toggleBankField(); // Ejecutar al cargar
+
         function calculateChange() {
             let total = parseInt(
                 $("#orderTotal").text().replace(/\D/g, "")
@@ -274,12 +319,22 @@
 
             });
 
+            const paymentType = $("#PaymentType").val();
+            const bankId = $("#BankId").val();
+
+            // Validar banco para transferencia
+            if (paymentType == 2 && !bankId) {
+                alert("Debe seleccionar un banco para pagos por transferencia.");
+                return;
+            }
+
             $.post("/Order/Pay", {
 
                 orderId: @Model.Id,
-                paymentType: $("#PaymentType").val(),
+                paymentType: paymentType,
                 receivedAmount: $("#ReceivedAmount").val(),
-                unitPrices: JSON.stringify(unitPrices)
+                unitPrices: JSON.stringify(unitPrices),
+                bankId: bankId || null
 
             }, function (response) {
 
