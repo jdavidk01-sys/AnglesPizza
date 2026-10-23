@@ -13,35 +13,29 @@
         -moz-appearance: textfield;
     }
 
-    .product-item {
+    /* Animación de entrada suave para todo el contenedor de productos */
+    .products-fade-in {
         opacity: 0;
-        animation: fadeInScale 0.6s ease-out forwards;
+        animation: fadeInSmooth 0.4s ease-out forwards;
     }
 
-    @@keyframes fadeInScale {
+    @@keyframes fadeInSmooth {
         from {
             opacity: 0;
-            transform: scale(0.95);
+            transform: translateY(4px);
         }
+
         to {
             opacity: 1;
-            transform: scale(1);
+            transform: translateY(0);
         }
     }
-
-    .product-item:nth-child(1) { animation-delay: 0s; }
-    .product-item:nth-child(2) { animation-delay: 0.1s; }
-    .product-item:nth-child(3) { animation-delay: 0.2s; }
-    .product-item:nth-child(4) { animation-delay: 0.3s; }
-    .product-item:nth-child(5) { animation-delay: 0.4s; }
-    .product-item:nth-child(6) { animation-delay: 0.5s; }
-    .product-item:nth-child(7) { animation-delay: 0.6s; }
-    .product-item:nth-child(8) { animation-delay: 0.7s; }
-    .product-item:nth-child(9) { animation-delay: 0.8s; }
-    .product-item:nth-child(n+10) { animation-delay: 0.9s; }
 
     .product-img {
         display: block;
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
     }
 </style>
 
@@ -92,10 +86,10 @@
 
                         <label class="form-label">Costo de Domicilio</label>
 
-                        <input type="number" 
-                               id="DeliveryCost" 
-                               name="DeliveryCost" 
-                               class="form-control" 
+                        <input type="number"
+                               id="DeliveryCost"
+                               name="DeliveryCost"
+                               class="form-control"
                                min="0"
                                step="50"
                                value="0" />
@@ -119,11 +113,11 @@
 
                             <!-- Fila de Nombre y Teléfono -->
                             <div class="row g-2 mb-3">
-                                <div class="col">
+                                <div class="col-12 col-sm-6">
                                     <label class="form-label small mb-1">Nombre</label>
                                     <input id="CustomerName" class="form-control form-control-sm">
                                 </div>
-                                <div class="col">
+                                <div class="col-12 col-sm-6">
                                     <label class="form-label small mb-1">Teléfono</label>
                                     <input id="CustomerPhone" class="form-control form-control-sm">
                                 </div>
@@ -131,11 +125,11 @@
 
                             <!-- Fila de Dirección y Referencia -->
                             <div class="row g-2 mb-3">
-                                <div class="col">
+                                <div class="col-12 col-sm-6">
                                     <label class="form-label small mb-1">Dirección</label>
                                     <textarea id="CustomerAddress" rows="2" class="form-control form-control-sm"></textarea>
                                 </div>
-                                <div class="col">
+                                <div class="col-12 col-sm-6">
                                     <label class="form-label small mb-1">Referencia</label>
                                     <textarea id="CustomerReference" rows="2" class="form-control form-control-sm"></textarea>
                                 </div>
@@ -143,12 +137,12 @@
 
                             <!-- Fila de Botones -->
                             <div class="row g-2">
-                                <div class="col">
+                                <div class="col-12 col-sm-6">
                                     <button id="btnUpdateCustomer" class="btn btn-sm btn-success w-100">
                                         Guardar Cambios
                                     </button>
                                 </div>
-                                <div class="col">
+                                <div class="col-12 col-sm-6">
                                     <button id="btnNewCustomer" class="btn btn-sm btn-danger w-100">
                                         Nuevo Cliente
                                     </button>
@@ -166,9 +160,9 @@
 
                         @foreach (var category in ViewBag.Categories)
                         {
-                            <div class="col-md-4">
+                            <div class="col-6 col-sm-4 col-md-4">
 
-                                <button type="button" class="btn btn-secondary w-100 category-btn" data-id="@category.Id">
+                                <button type="button" class="btn btn-secondary w-100 category-btn text-truncate" data-id="@category.Id">
                                     @category.Name
                                 </button>
 
@@ -191,7 +185,7 @@
         </div>
 
         <!-- PANEL DERECHO -->
-        <div class="col-md-4">
+        <div class="col-md-4 mt-3 mt-md-0">
 
             <div class="card shadow-sm">
 
@@ -467,53 +461,68 @@
             $(".category-btn").click(function () {
 
                 let categoryId = $(this).data("id");
+                let $productsContainer = $("#products");
+
+                // Indicador de carga mientras descarga y precarga
+                $productsContainer.html(`
+                            <div class="col-12 text-center py-4 text-muted">
+                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                Cargando productos...
+                            </div>
+                        `);
 
                 $.get("/Order/GetProducts", { categoryId: categoryId }, function (products) {
 
-                    let html = "";
+                    if (products.length === 0) {
+                        $productsContainer.html(`
+                                    <div class="col-12 text-muted py-3">
+                                        No hay productos disponibles en esta categoría.
+                                    </div>
+                                `);
+                        return;
+                    }
 
-                    products.forEach(function (p) {
-
-                        let image = p.hasImage
-                            ? `/Product/GetImage/${p.id}`
-                            : "/images/no-image.png";
-
-                        html += `
-                            <div class="col-md-3 product-item">
-
-                                <button class="btn btn-outline-secondary w-100 product-btn"
-                                        data-id="${p.id}"
-                                        data-name="${p.name}">
-
-                                    <img src="${image}"
-                                         class="img-fluid rounded mb-2 product-img"
-                                         style="height:120px;object-fit:cover;" />
-
-                                    <div><strong>${p.name}</strong></div>
-
-                                    <small>$${p.price.toLocaleString()}</small>
-
-                                </button>
-
-                            </div>`;
+                    // 1. Promesas para precargar todas las imágenes antes de mostrarlas
+                    let imagePromises = products.map(p => {
+                        return new Promise((resolve) => {
+                            let img = new Image();
+                            let src = p.hasImage ? `/Product/GetImage/${p.id}` : "/images/no-image.png";
+                            img.src = src;
+                            img.onload = () => resolve({ id: p.id, src: src });
+                            img.onerror = () => resolve({ id: p.id, src: "/images/no-image.png" });
+                        });
                     });
 
-                    $("#products").html(html);
+                    // 2. Esperar a que TODAS las imágenes estén descargadas en caché
+                    Promise.all(imagePromises).then(loadedImages => {
+                        let html = '<div class="row g-2 w-100 m-0 products-fade-in">';
 
-                    preloadImages(products);
+                        products.forEach(p => {
+                            let imgObj = loadedImages.find(i => i.id === p.id);
+                            let imageSrc = imgObj ? imgObj.src : "/images/no-image.png";
+
+                            html += `
+                                        <div class="col-6 col-sm-4 col-md-3">
+                                            <button class="btn btn-outline-secondary w-100 product-btn text-center p-2"
+                                                    data-id="${p.id}"
+                                                    data-name="${p.name}">
+                                                <img src="${imageSrc}"
+                                                     class="img-fluid rounded mb-2 product-img" />
+                                                <div class="text-truncate"><strong>${p.name}</strong></div>
+                                                <small>$${p.price.toLocaleString()}</small>
+                                            </button>
+                                        </div>`;
+                        });
+
+                        html += '</div>';
+
+                        // 3. Renderizar todo el bloque completo simultáneamente
+                        $productsContainer.html(html);
+                    });
 
                 });
 
             });
-
-            function preloadImages(products) {
-                products.forEach(function (p) {
-                    if (p.hasImage) {
-                        let img = new Image();
-                        img.src = `/Product/GetImage/${p.id}`;
-                    }
-                });
-            }
 
         });
 
@@ -530,47 +539,47 @@
             $("#Notes").val("");
 
             $.get("/Order/GetModifiers",
-            {
-                productId: productId
-            },
-            function (modifiers) {
+                {
+                    productId: productId
+                },
+                function (modifiers) {
 
-                let html = "";
+                    let html = "";
 
-                modifiers.forEach(function (m) {
+                    modifiers.forEach(function (m) {
 
-                    html += `
-                        <div class="form-check">
+                        html += `
+                                <div class="form-check">
 
-                            <input class="form-check-input modifier-check"
-                                   type="checkbox"
-                                   value="${m.id}"
-                                   data-cost="${m.extraCost}">
+                                    <input class="form-check-input modifier-check"
+                                           type="checkbox"
+                                           value="${m.id}"
+                                           data-cost="${m.extraCost}">
 
-                            <label class="form-check-label fs-6">
+                                    <label class="form-check-label fs-6">
 
-                                ${m.name}
-                                ${m.extraCost > 0 ? `+$${m.extraCost.toLocaleString()}` : ''}
+                                        ${m.name}
+                                        ${m.extraCost > 0 ? `+$${m.extraCost.toLocaleString()}` : ''}
 
-                            </label>
+                                    </label>
 
-                        </div>`;
+                                </div>`;
+                    });
+
+                    if (modifiers.length === 0) {
+
+                        html = `
+                                <div class="text-muted">
+                                    Este producto no tiene sabores o adicionales.
+                                </div>`;
+                    }
+
+                    $("#modifierList").html(html);
+
+                    const modal = new bootstrap.Modal(document.getElementById("productModal"));
+                    modal.show();
+
                 });
-
-                if (modifiers.length === 0) {
-
-                    html = `
-                        <div class="text-muted">
-                            Este producto no tiene sabores o adicionales.
-                        </div>`;
-                }
-
-                $("#modifierList").html(html);
-
-                const modal = new bootstrap.Modal(document.getElementById("productModal"));
-                modal.show();
-
-            });
 
         });
 
@@ -615,20 +624,20 @@
                     total += item.total;
 
                     html += `
-                        <div class="card mb-2">
+                                <div class="card mb-2">
 
-                            <div class="card-body p-2">
+                                    <div class="card-body p-2">
 
-                                <div class="d-flex justify-content-between">
+                                        <div class="d-flex justify-content-between">
 
-                                    <strong>${item.productName} x ${item.quantity} unds.</strong>
+                                            <strong>${item.productName} x ${item.quantity} unds.</strong>
 
-                                    <button class="btn btn-sm btn-outline-danger remove-item"
-                                            data-index="${index}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                                            <button class="btn btn-sm btn-outline-danger remove-item"
+                                                    data-index="${index}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
 
-                                </div>`;
+                                        </div>`;
 
                     if (item.modifierNames.length > 0) {
 
@@ -637,8 +646,8 @@
                         item.modifierNames.forEach(function (m) {
 
                             html += `<div class="text-primary small">
-                                        + ${m}
-                                     </div>`;
+                                                + ${m}
+                                             </div>`;
                         });
 
                         html += `</div>`;
@@ -647,28 +656,28 @@
                     if (item.notes) {
 
                         html += `
-                            <div class="text-muted small mt-2">
-                                <strong>Obs:</strong> ${item.notes}
-                            </div>`;
+                                    <div class="text-muted small mt-2">
+                                        <strong>Obs:</strong> ${item.notes}
+                                    </div>`;
                     }
 
                     html += `
 
-                                <div class="text-end mt-2">
-                                    <strong>$${item.total.toLocaleString()}</strong>
-                                </div>
+                                        <div class="text-end mt-2">
+                                            <strong>$${item.total.toLocaleString()}</strong>
+                                        </div>
 
-                            </div>
+                                    </div>
 
-                        </div>`;
+                                </div>`;
                 });
 
                 if (items.length === 0) {
 
                     html = `
-                        <div class="text-muted">
-                            No hay productos agregados.
-                        </div>`;
+                                <div class="text-muted">
+                                    No hay productos agregados.
+                                </div>`;
                 }
 
                 $("#orderDetails").html(html);
@@ -683,29 +692,29 @@
 
                 // Generar resumen
                 let summaryHtml = `
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Subtotal</span>
-                        <span>$${subtotal.toLocaleString()}</span>
-                    </div>
-                `;
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                                <span>$${subtotal.toLocaleString()}</span>
+                            </div>
+                        `;
 
                 // OrderType.Domicilio = 2
                 if (orderType === "2" && deliveryCost > 0) {
                     summaryHtml += `
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Domicilio</span>
-                            <span class="text-primary">$${deliveryCost.toLocaleString()}</span>
-                        </div>
-                    `;
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Domicilio</span>
+                                    <span class="text-primary">$${deliveryCost.toLocaleString()}</span>
+                                </div>
+                            `;
                 }
 
                 summaryHtml += `
-                    <hr />
-                    <div class="d-flex justify-content-between">
-                        <h5>Total</h5>
-                        <h5>$${finalTotal.toLocaleString()}</h5>
-                    </div>
-                `;
+                            <hr />
+                            <div class="d-flex justify-content-between">
+                                <h5>Total</h5>
+                                <h5>$${finalTotal.toLocaleString()}</h5>
+                            </div>
+                        `;
 
                 $("#orderSummary").html(summaryHtml);
 
