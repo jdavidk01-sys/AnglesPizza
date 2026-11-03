@@ -35,22 +35,6 @@ namespace AngelesPizza.Migrations
                     table.PrimaryKey("PK_Banks", x => x.Id);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Banks",
-                columns: new[] { "Id", "CreatedAt", "IsActive", "Name", "SwiftCode" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc), true, "Bancolombia", "COLCCO22" },
-                    { 2, new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc), true, "Banco de Bogotá", "BOGOCO22" },
-                    { 3, new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc), true, "Banco Santander", "BSANESCO" },
-                    { 4, new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc), true, "BBVA", "BBVAESCO" },
-                    { 5, new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc), true, "Davivienda", "DAVICO22" },
-                    { 6, new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc), true, "Banco Caja Social", "CAJACO22" },
-                    { 7, new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc), true, "Banco Occidente", "OCCOCO22" },
-                    { 8, new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc), true, "Banco Popular", "BOPOCO22" },
-                    { 9, new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc), true, "Banco Falabella", "FALACO22" },
-                    { 10, new DateTime(2024, 10, 20, 0, 0, 0, DateTimeKind.Utc), true, "Scotiabank", "SCBLESCO" }
-                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_BankId",
