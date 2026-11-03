@@ -168,19 +168,55 @@
                                     </a>
                                 </li>
 
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="Bank"
+                                       asp-action="Index">
+
+                                        Bancos
+
+                                    </a>
+                                </li>
+
                             </ul>
 
                         </li>
 
                         <!-- CAJA -->
 
-                        <li class="nav-item">
+                        <li class="nav-item dropdown">
 
-                            <a class="nav-link text-body"
-                               asp-controller="CashRegister"
-                               asp-action="Index">
+                            <a class="nav-link dropdown-toggle text-body"
+                               href="#"
+                               data-bs-toggle="dropdown">
+
                                 Caja
+
                             </a>
+
+                            <ul class="dropdown-menu">
+
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="CashRegister"
+                                       asp-action="Index">
+
+                                        Cajas
+
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="CashRegister"
+                                       asp-action="Status">
+
+                                        Caja Actual
+
+                                    </a>
+                                </li>
+
+                            </ul>
 
                         </li>
 
