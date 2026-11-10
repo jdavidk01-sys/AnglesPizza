@@ -3,6 +3,10 @@
 @{
     ViewData["Title"] = $"Detalle de Caja #{Model.Id}";
     bool isOpen = Model.IsClosed == false || Model.IsClosed == null;
+    int cashSales = ViewBag.CashSales ?? 0;
+    int transferSales = ViewBag.TransferSales ?? 0;
+    int cardSales = ViewBag.CardSales ?? 0;
+    int cashExpected = ViewBag.CashExpected ?? 0;
 }
 
 <div class="container-fluid">
@@ -60,19 +64,19 @@
                             </tr>
                             <tr>
                                 <th>Ventas Efectivo</th>
-                                <td>$@Model.TotalCashSales.ToString("N0")</td>
+                                <td>$@cashSales.ToString("N0")</td>
                             </tr>
                             <tr>
                                 <th>Ventas Transferencia</th>
-                                <td>$@Model.TotalTransferSales.ToString("N0")</td>
+                                <td>$@transferSales.ToString("N0")</td>
                             </tr>
                             <tr>
                                 <th>Ventas Tarjeta</th>
-                                <td>$@Model.TotalCardSales.ToString("N0")</td>
+                                <td>$@cardSales.ToString("N0")</td>
                             </tr>
                             <tr>
                                 <th>Efectivo Esperado</th>
-                                <td>$@Model.FinalCashExpected.ToString("N0")</td>
+                                <td>$@cashExpected.ToString("N0")</td>
                             </tr>
                             <tr>
                                 <th>Efectivo Real</th>

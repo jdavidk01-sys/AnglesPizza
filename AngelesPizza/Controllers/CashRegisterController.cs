@@ -180,6 +180,25 @@ namespace AngelesPizza.Controllers
             if (register == null)
                 return NotFound();
 
+            var cashSales = register.Payments
+                .Where(p => p.PaymentType == PaymentType.Efectivo)
+                .Sum(p => p.Amount);
+
+            var transferSales = register.Payments
+                .Where(p => p.PaymentType == PaymentType.Transferencia)
+                .Sum(p => p.Amount);
+
+            var cardSales = register.Payments
+                .Where(p => p.PaymentType == PaymentType.Tarjeta)
+                .Sum(p => p.Amount);
+
+            int cashExpected = register.InitialAmount + cashSales;
+
+            ViewBag.CashSales = cashSales;
+            ViewBag.TransferSales = transferSales;
+            ViewBag.CardSales = cardSales;
+            ViewBag.CashExpected = cashExpected;
+
             return View(register);
         }
 
@@ -201,7 +220,7 @@ namespace AngelesPizza.Controllers
             }
 
             var registers = await query
-                .OrderBy(r => r.OpenedAt)
+                .OrderByDescending(r => r.OpenedAt)
                 .ToListAsync();
 
             using (var workbook = new XLWorkbook())

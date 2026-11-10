@@ -126,8 +126,8 @@
                             int diff = item.CashDifference ?? 0;
 
                             <tr>
-                                <td>@item.OpenedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                                <td>@(item.ClosedAt.HasValue ? item.ClosedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "-")</td>
+                                <td data-order="@item.OpenedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")">@item.OpenedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                <td data-order="@(item.ClosedAt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss") ?? "")">@(item.ClosedAt.HasValue ? item.ClosedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "-")</td>
                                 <td>$@item.InitialAmount.ToString("N0")</td>
                                 <td>$@item.TotalCashSales.ToString("N0")</td>
                                 <td>$@item.TotalTransferSales.ToString("N0")</td>
@@ -194,6 +194,11 @@
                 info: true,
                 lengthChange: true,
                 pageLength: 10,
+                order: [[0, 'desc']],
+                columnDefs: [
+                    { type: 'date-eu', targets: 0 },
+                    { type: 'date-eu', targets: 1 }
+                ],
 
                 language: {
 

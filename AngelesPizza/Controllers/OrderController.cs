@@ -42,6 +42,12 @@ public class OrderController : Controller
     // Pantalla del POS
     public async Task<IActionResult> New()
     {
+        var activeRegister = await _context.CashRegisters
+            .FirstOrDefaultAsync(r => r.IsClosed == false || r.IsClosed == null);
+
+        if (activeRegister == null)
+            return RedirectToAction("Open", "CashRegister");
+
         ViewBag.OrderTypes = new SelectList(
             Enum.GetValues<OrderType>()
                 .Select(x => new
